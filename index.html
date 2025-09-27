@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8" />
@@ -6,7 +6,11 @@
 <title>Link Up — Home</title>
 
 <!-- Fonts: calligraphic + modern UI -->
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Rubik:wght@300;400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?
+
+family=Pacifico&family=Rubik:wght@300;400;700&display=swap" 
+
+rel="stylesheet">
 
 <style>
   :root{
@@ -15,47 +19,87 @@
 
   html,body{height:100%;margin:0;}
   body{
-    font-family:"Rubik", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    font-family:"Rubik", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica 
+
+Neue", Arial;
     color:var(--white);
     overflow:hidden;
     -webkit-font-smoothing:antialiased;
     -moz-osx-font-smoothing:grayscale;
 
     /* Gen-Z vibrant animated gradient */
-    background: linear-gradient(120deg, #ff0080 0%, #ffd600 22%, #ff6a00 44%, #ff004d 66%, #8b00ff 100%);
+    background: linear-gradient(120deg, #ff0080 0%, #ffd600 22%, #ff6a00 
+
+44%, #ff004d 66%, #8b00ff 100%);
     background-size: 300% 300%;
     animation: bgShift 14s ease-in-out infinite;
   }
-  @keyframes bgShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes bgShift{0%{background-position:0% 50%}50%{background-
+
+position:100% 50%}100%{background-position:0% 50%}}
 
   /* Layout */
-  .stage{position:relative;height:100vh;width:100%;display:flex;align-items:center;justify-content:center;padding:48px;box-sizing:border-box;}
+  .stage{position:relative;height:100vh;width:100%;display:flex;align-
+
+items:center;justify-content:center;padding:48px;box-sizing:border-box;}
   .center-card{
-    width:min(1000px,92%);max-width:1200px;padding:34px 36px;border-radius:18px;
+    width:min(1000px,92%);max-width:1200px;padding:34px 36px;border-
+
+radius:18px;
     background: linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.12));
-    box-shadow:0 12px 40px rgba(0,0,0,0.36);backdrop-filter: blur(6px) saturate(120%);
+    box-shadow:0 12px 40px rgba(0,0,0,0.36);backdrop-filter: blur(6px) saturate
+
+(120%);
     display:flex;gap:22px;align-items:center;justify-content:space-between;
   }
 
   /* Description */
   .desc{flex:1 1 60%;padding-right:20px;}
-  .desc h1{font-family:"Pacifico",cursive;font-size:clamp(24px,4.2vw,48px);line-height:1.05;margin:0 0 10px 0;letter-spacing:0.6px;text-shadow:0 6px 22px rgba(0,0,0,0.35)}
-  .desc p{margin:0;font-size:clamp(12px,1.6vw,18px);line-height:1.45;opacity:0.95;text-transform:uppercase;font-weight:600;letter-spacing:0.6px}
+  .desc h1{font-family:"Pacifico",cursive;font-size:clamp(24px,4.2vw,48px);line-
+
+height:1.05;margin:0 0 10px 0;letter-spacing:0.6px;text-shadow:0 6px 22px rgba
+
+(0,0,0,0.35)}
+  .desc p{margin:0;font-size:clamp(12px,1.6vw,18px);line-
+
+height:1.45;opacity:0.95;text-transform:uppercase;font-weight:600;letter-
+
+spacing:0.6px}
 
   /* Right panel */
-  .right-panel{width:320px;min-width:220px;display:flex;flex-direction:column;align-items:center;gap:18px;padding-left:10px}
-  .monkey-wrap{width:220px;height:220px;display:flex;align-items:center;justify-content:center;border-radius:28px;background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));box-shadow:0 8px 30px rgba(0,0,0,0.35), inset 0 -6px 18px rgba(0,0,0,0.08);transform-style:preserve-3d;perspective:800px;}
-  .monkey-img{width:160px;height:160px;object-fit:contain;filter: drop-shadow(0 18px 30px rgba(0,0,0,0.45));transform-origin:center;animation: monkeyDance 1.6s ease-in-out infinite;}
+  .right-panel{width:320px;min-width:220px;display:flex;flex-
+
+direction:column;align-items:center;gap:18px;padding-left:10px}
+  .monkey-wrap{width:220px;height:220px;display:flex;align-
+
+items:center;justify-content:center;border-radius:28px;background:linear-
+
+gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));box-shadow:0 
+
+8px 30px rgba(0,0,0,0.35), inset 0 -6px 18px rgba(0,0,0,0.08);transform-
+
+style:preserve-3d;perspective:800px;}
+  .monkey-img{width:160px;height:160px;object-fit:contain;filter: drop-shadow(0 
+
+18px 30px rgba(0,0,0,0.45));transform-origin:center;animation: monkeyDance 1.6s 
+
+ease-in-out infinite;}
   @keyframes monkeyDance{
     0%{ transform: translateY(0) rotateY(0) rotate(-3deg) translateX(0); }
-    25%{ transform: translateY(-10px) rotateY(9deg) rotate(5deg) translateX(6px); }
+    25%{ transform: translateY(-10px) rotateY(9deg) rotate(5deg) translateX
+
+(6px); }
     50%{ transform: translateY(0) rotateY(0) rotate(-3deg) translateX(0); }
-    75%{ transform: translateY(-8px) rotateY(-9deg) rotate(5deg) translateX(-6px); }
+    75%{ transform: translateY(-8px) rotateY(-9deg) rotate(5deg) translateX(-
+
+6px); }
     100%{ transform: translateY(0) rotateY(0) rotate(-3deg) translateX(0); }
   }
 
   /* Luffy waves hi: extra small hand-wiggle (simulated with scale/rotate) */
-  .monkey-wave { animation: waveHi 1.2s ease-in-out infinite; transform-origin:center bottom; }
+  .monkey-wave { animation: waveHi 1.2s ease-in-out infinite; transform-
+
+origin:center bottom; }
   @keyframes waveHi{
     0%{ transform: translateY(0) rotate(0deg) scale(1); }
     20%{ transform: translateY(-6px) rotate(-6deg) scale(1.02); }
@@ -64,27 +108,69 @@
     100%{ transform: translateY(0) rotate(0deg) scale(1); }
   }
 
-  .monkey-speech{font-size:14px;text-align:center;padding:8px 12px;border-radius:999px;background:linear-gradient(90deg, rgba(0,160,255,0.14), rgba(0,120,255,0.08));color:#e6f7ff;box-shadow:0 6px 20px rgba(0,120,255,0.12);font-weight:800}
-  .monkey-speech .hi{display:inline-block;margin-left:6px;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,#00e0ff,#0077ff);color:#001a33;box-shadow:0 8px 20px rgba(0,100,255,0.22);animation: hiPulse 1s ease-in-out infinite;}
-  @keyframes hiPulse{0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+  .monkey-speech{font-size:14px;text-align:center;padding:8px 12px;border-
+
+radius:999px;background:linear-gradient(90deg, rgba(0,160,255,0.14), rgba
+
+(0,120,255,0.08));color:#e6f7ff;box-shadow:0 6px 20px rgba
+
+(0,120,255,0.12);font-weight:800}
+  .monkey-speech .hi{display:inline-block;margin-left:6px;padding:6px 
+
+10px;border-radius:999px;background:linear-gradient
+
+(90deg,#00e0ff,#0077ff);color:#001a33;box-shadow:0 8px 20px rgba
+
+(0,100,255,0.22);animation: hiPulse 1s ease-in-out infinite;}
+  @keyframes hiPulse{0%{transform:translateY(0)}50%{transform:translateY(-
+
+6px)}100%{transform:translateY(0)}}
 
   /* GET STARTED button */
   .cta{width:100%;display:flex;justify-content:center;margin-top:6px}
-  .btn-start{appearance:none;border:none;padding:14px 26px;border-radius:12px;font-weight:800;font-size:18px;cursor:pointer;letter-spacing:1px;background:linear-gradient(90deg,#00d2ff,#0066ff);color:#002b5b;box-shadow:0 12px 40px rgba(0,110,255,0.28);transition:transform .12s,box-shadow .12s}
-  .btn-start:active{transform:translateY(2px) scale(.995);box-shadow:0 6px 18px rgba(0,110,255,0.16)}
+  .btn-start{appearance:none;border:none;padding:14px 26px;border-
+
+radius:12px;font-weight:800;font-size:18px;cursor:pointer;letter-
+
+spacing:1px;background:linear-gradient
+
+(90deg,#00d2ff,#0066ff);color:#002b5b;box-shadow:0 12px 40px rgba
+
+(0,110,255,0.28);transition:transform .12s,box-shadow .12s}
+  .btn-start:active{transform:translateY(2px) scale(.995);box-shadow:0 6px 18px 
+
+rgba(0,110,255,0.16)}
 
   /* floating messages (no boxes) */
   .float-layer{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:visible}
-  .floating-msg{position:absolute;font-weight:900;font-size:clamp(14px,2vw,30px);white-space:nowrap;pointer-events:none;text-shadow:0 12px 30px rgba(0,0,0,0.45);user-select:none;mix-blend-mode:screen;padding:2px 6px;border-radius:999px;opacity:0.98}
+  .floating-msg{position:absolute;font-weight:900;font-size:clamp
+
+(14px,2vw,30px);white-space:nowrap;pointer-events:none;text-shadow:0 12px 
+
+30px rgba(0,0,0,0.45);user-select:none;mix-blend-mode:screen;padding:2px 
+
+6px;border-radius:999px;opacity:0.98}
 
   /* page rotate animation for transition */
-  .rotateOut{animation: pageRotate 820ms ease-in forwards;transform-origin:center}
-  @keyframes pageRotate{0%{transform:perspective(1000px) rotateY(0deg) scale(1);opacity:1}60%{transform:perspective(1000px) rotateY(85deg) scale(.95);opacity:.95}100%{transform:perspective(1000px) rotateY(170deg) scale(.6);opacity:0}}
+  .rotateOut{animation: pageRotate 820ms ease-in forwards;transform-
 
-  .tiny{position:fixed;bottom:10px;left:14px;font-size:12px;opacity:0.85;z-index:10}
+origin:center}
+  @keyframes pageRotate{0%{transform:perspective(1000px) rotateY(0deg) 
+
+scale(1);opacity:1}60%{transform:perspective(1000px) rotateY(85deg) scale
+
+(.95);opacity:.95}100%{transform:perspective(1000px) rotateY(170deg) scale
+
+(.6);opacity:0}}
+
+  .tiny{position:fixed;bottom:10px;left:14px;font-size:12px;opacity:0.85;z-
+
+index:10}
 
   @media (max-width:900px){
-    .center-card{flex-direction:column;align-items:center;text-align:center;gap:12px;padding:22px}
+    .center-card{flex-direction:column;align-items:center;text-
+
+align:center;gap:12px;padding:22px}
     .desc{padding-right:0}
     .right-panel{width:100%}
     .monkey-wrap{width:180px;height:180px}
@@ -111,23 +197,35 @@
       <div class="desc">
         <h1 id="siteTitle">Link Up</h1>
         <p>
-          A PLACE WHERE KIDS CAN BE KIDS, HANG OUT WITH FRIENDS, SHARE MEMORIES, AND DISCOVER WHO THEY REALLY ARE.
-          A BRIGHT, SAFE, VIBRANT COMMUNITY BUILT FOR CONNECTION, FUN, AND GROWTH. EXPLORE, EXPRESS, CREATE, AND PLAY
-          TOGETHER WITH ZERO JUDGMENT. THIS IS A SPACE FOR LAUGHS, FOR DREAMS, FOR FRIENDSHIP, FOR SELF-DISCOVERY.
+          A PLACE WHERE KIDS CAN BE KIDS, HANG OUT WITH FRIENDS, 
+
+SHARE MEMORIES, AND DISCOVER WHO THEY REALLY ARE.
+          A BRIGHT, SAFE, VIBRANT COMMUNITY BUILT FOR CONNECTION, 
+
+FUN, AND GROWTH. EXPLORE, EXPRESS, CREATE, AND PLAY
+          TOGETHER WITH ZERO JUDGMENT. THIS IS A SPACE FOR LAUGHS, 
+
+FOR DREAMS, FOR FRIENDSHIP, FOR SELF-DISCOVERY.
           BE YOU. FIND YOUR TRIBE. LIVE YOUR MAGIC.
         </p>
       </div>
 
       <aside class="right-panel" aria-label="Start panel">
        <div class="monkey-wrap" role="img" aria-label="Luffy dancing monkey">
-  <img class="monkey-img monkey-wave" src="luffy.jpeg" alt="Luffy the dancing monkey">
+  <img class="monkey-img monkey-wave" src="luffy.jpeg" alt="Luffy the dancing 
+
+monkey">
 </div>
 
 
-        <div class="monkey-speech">Hey! I'm Luffy. Lemme be your guide! <span class="hi">Hi 👋</span></div>
+        <div class="monkey-speech">Hey! I'm Luffy. Lemme be your guide! <span 
+
+class="hi">Hi 👋</span></div>
 
         <div class="cta">
-          <button class="btn-start" id="startBtn" aria-label="Get started">GET STARTED</button>
+          <button class="btn-start" id="startBtn" aria-label="Get started">GET 
+
+STARTED</button>
         </div>
       </aside>
     </section>
@@ -208,10 +306,18 @@ function animate(now){
     it.y += it.vy * (1.6 * dt);
 
     const halfW = it.w/2, halfH = it.h/2;
-    if(it.x - halfW < padding){ it.x = padding + halfW; it.vx *= -1; it.vy += r(-0.25,0.25); }
-    if(it.x + halfW > W - padding){ it.x = W - padding - halfW; it.vx *= -1; it.vy += r(-0.25,0.25); }
-    if(it.y - halfH < padding){ it.y = padding + halfH; it.vy *= -1; it.vx += r(-0.25,0.25); }
-    if(it.y + halfH > H - padding){ it.y = H - padding - halfH; it.vy *= -1; it.vx += r(-0.25,0.25); }
+    if(it.x - halfW < padding){ it.x = padding + halfW; it.vx *= -1; it.vy += r(-
+
+0.25,0.25); }
+    if(it.x + halfW > W - padding){ it.x = W - padding - halfW; it.vx *= -1; it.vy += r
+
+(-0.25,0.25); }
+    if(it.y - halfH < padding){ it.y = padding + halfH; it.vy *= -1; it.vx += r(-
+
+0.25,0.25); }
+    if(it.y + halfH > H - padding){ it.y = H - padding - halfH; it.vy *= -1; it.vx += r(-
+
+0.25,0.25); }
 
     // more frequent tiny jitter for liveliness
     if(Math.random() < 0.01){ it.vx += r(-0.25,0.25); it.vy += r(-0.18,0.18); }
@@ -242,7 +348,9 @@ startBtn.addEventListener('click', async () => {
   }
   const stage = document.getElementById('mainStage');
   stage.classList.add('rotateOut');
-  setTimeout(()=> { window.location.href = "NEXTPAGE.html"; }, 820); // replace NEXTPAGE.html
+  setTimeout(()=> { window.location.href = "NEXTPAGE.html"; }, 820); // replace 
+
+NEXTPAGE.html
 });
 
 /* Quick keyboard mute toggle: press M */
@@ -255,4 +363,3 @@ window.addEventListener('keydown', (e)=>{
 </script>
 </body>
 </html>
-
