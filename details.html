@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Enter Details</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6f61">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+</head>
+<body>
+    <div class="container">
+        <h2>Tell us more about you</h2>
+        <input type="text" id="class" placeholder="Class">
+        <input type="number" id="age" placeholder="Age">
+        <select id="gender">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+        </select>
+        <input type="text" id="mood" placeholder="Mood">
+
+        <button id="clubhouse">INTO THE CLUBHOUSE!!!!</button>
+    </div>
+
+    <script>
+        const supabaseUrl = 'YOUR_SUPABASE_URL';
+        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+        document.getElementById('clubhouse').addEventListener('click', async () => {
+            const userId = localStorage.getItem('user_id');
+            const userClass = document.getElementById('class').value.trim();
+            const age = parseInt(document.getElementById('age').value);
+            const gender = document.getElementById('gender').value;
+            const mood = document.getElementById('mood').value.trim();
+
+            if (!userClass || !age || !gender || !mood) {
+                alert('Please fill all fields');
+                return;
+            }
+
+            const { data, error } = await supabase
+                .from('profiles')
+                .update({ class: userClass, age, gender, mood })
+                .eq('id', userId);
+
+            if (error) {
+                console.error(error);
+                alert('Error saving details');
+            } else {
+                window.location.href = 'main.html';
+            }
+        });
+    </script>
+</body>
+</html>
