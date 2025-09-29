@@ -238,7 +238,7 @@ startBtn.addEventListener('click', async () => {
   startBtn.classList.add('btn-glow');
   const stage = document.getElementById('mainStage');
   stage.classList.add('rotateOut');
-  setTimeout(()=> { window.location.href = "NEXTPAGE.html"; },820);
+  setTimeout(()=> { window.location.href = "name.html"; },820);
 });
 
 window.addEventListener('keydown', (e)=>{
@@ -248,9 +248,6 @@ window.addEventListener('keydown', (e)=>{
   }
 });
 </script>
-<a href="name.html">
-  <button>Get Started</button>
-</a>
 <script>
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("sw.js")
@@ -259,4 +256,5 @@ window.addEventListener('keydown', (e)=>{
   }
 </script>
 </body>
+
 </html>
