@@ -1,0 +1,602 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Clubhouse</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Animated background elements */
+        .grass {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, #2ecc71, #27ae60);
+            z-index: 0;
+        }
+        
+        .grass::before {
+            content: '🌿🌾🌿🍀🌿🌾🌿🍀🌿🌾🌿🍀🌿🌾🌿🍀🌿🌾🌿🍀';
+            position: absolute;
+            top: -20px;
+            left: 0;
+            right: 0;
+            font-size: 30px;
+            animation: sway 3s ease-in-out infinite;
+        }
+        
+        @keyframes sway {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(10px); }
+        }
+        
+        .house {
+            position: fixed;
+            font-size: 60px;
+            animation: float 4s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        .house1 { bottom: 140px; left: 5%; animation-delay: 0s; }
+        .house2 { bottom: 140px; right: 5%; animation-delay: 1s; }
+        .house3 { bottom: 140px; left: 50%; transform: translateX(-50%); animation-delay: 2s; }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .sparkles {
+            position: fixed;
+            top: 20%;
+            left: 10%;
+            font-size: 40px;
+            animation: sparkle 2s ease-in-out infinite;
+            z-index: 1;
+        }
+        
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.3); }
+        }
+        
+        /* Main container */
+        .container {
+            position: relative;
+            z-index: 10;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        /* Header icons */
+        .header-icons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .icon-btn {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .icon-btn:active {
+            transform: scale(1.3);
+        }
+        
+        .icon-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .icon-btn:active::before {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .icon-btn span {
+            font-size: 35px;
+            margin-bottom: 5px;
+        }
+        
+        .icon-btn p {
+            font-size: 10px;
+            color: #fff;
+            font-weight: bold;
+        }
+        
+        /* Welcome message */
+        .welcome {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            padding: 40px 20px;
+            margin: 30px 0;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: bounceIn 0.8s ease;
+        }
+        
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        .welcome h1 {
+            font-size: 48px;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px rgba(255, 255, 255, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(255, 255, 255, 0.8); }
+        }
+        
+        .welcome p {
+            font-size: 24px;
+            color: #fff;
+            margin-top: 10px;
+        }
+        
+        /* Status section */
+        .status-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .status-section h3 {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .status-input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 10px;
+            outline: none;
+        }
+        
+        .photo-upload {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .upload-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .post-btn {
+            width: 100%;
+            padding: 15px;
+            border-radius: 15px;
+            border: none;
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: #fff;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .post-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            border-radius: 15px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            float: right;
+            font-size: 30px;
+            color: #fff;
+            cursor: pointer;
+        }
+        
+        .status-feed {
+            margin-top: 20px;
+        }
+        
+        .status-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 15px 0;
+            animation: slideIn 0.5s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .status-item h4 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .status-item img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .status-item p {
+            color: #fff;
+            margin: 5px 0;
+        }
+        
+        .comment {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            border-radius: 10px;
+            margin-top: 10px;
+            color: #fff;
+            font-style: italic;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        input[type="file"] {
+            display: none;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background decorations -->
+    <div class="grass"></div>
+    <div class="house house1">🏠</div>
+    <div class="house house2">🏡</div>
+    <div class="house house3">🏘️</div>
+    <div class="sparkles" style="top: 15%; left: 85%;">✨</div>
+    <div class="sparkles" style="top: 25%; left: 15%; animation-delay: 1s;">⭐</div>
+    <div class="sparkles" style="top: 40%; right: 10%; animation-delay: 0.5s;">💫</div>
+
+    <div class="container">
+        <!-- Header Icons -->
+        <div class="header-icons">
+            <div class="icon-btn" id="profileBtn">
+                <span>👤</span>
+                <p>Profile</p>
+            </div>
+            <div class="icon-btn" id="viewStatusBtn">
+                <span>👁️</span>
+                <p>View Status</p>
+            </div>
+            <div class="icon-btn" id="chatBtn">
+                <span>💬</span>
+                <p>Chat</p>
+            </div>
+        </div>
+
+        <!-- Welcome Message -->
+        <div class="welcome">
+            <h1>WELCOME TO THE CLUBHOUSE!</h1>
+            <p id="userName">Loading...</p>
+        </div>
+
+        <!-- Post Status Section -->
+        <div class="status-section">
+            <h3>📸 Post Today's Status</h3>
+            <div class="photo-upload">
+                <button class="upload-btn" id="galleryBtn">📷 Gallery</button>
+                <button class="upload-btn" id="cameraBtn">📸 Camera</button>
+            </div>
+            <input type="file" id="galleryInput" accept="image/*">
+            <input type="file" id="cameraInput" accept="image/*" capture="environment">
+            <img id="previewImage" class="preview-image" alt="Preview">
+            <input type="text" class="status-input" id="moodInput" placeholder="What's your mood today? 😊">
+            <button class="post-btn" id="postStatusBtn">Post Status 🚀</button>
+        </div>
+    </div>
+
+    <!-- View Status Modal -->
+    <div class="modal" id="statusModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2 style="color: #fff; margin-bottom: 20px;">📱 Today's Status Feed</h2>
+            <div class="status-feed" id="statusFeed"></div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // ========================================
+        const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // Random comments for photos and moods
+        const photoComments = [
+            "You looking gorgeous today! 😍",
+            "Oh wow, just beautiful! ✨",
+            "Stunning! 🔥",
+            "Love this vibe! 💯",
+            "Absolutely amazing! 🌟",
+            "You're glowing! ✨",
+            "Perfection! 👌"
+        ];
+
+        const moodComments = {
+            happy: ["Keep shining! ☀️", "Your happiness is contagious! 😊"],
+            sad: ["It's OK, don't worry. We're here for you! 🤗", "Tomorrow will be better! 💪"],
+            excited: ["Yesss! Love the energy! 🎉", "Your excitement is infectious! 🔥"],
+            tired: ["Rest up, you deserve it! 😴", "Take it easy today! 💤"],
+            motivated: ["Go crush it! 💪", "That's the spirit! 🚀"],
+            chill: ["Living your best life! 😎", "Vibes on point! 🌊"],
+            creative: ["Can't wait to see what you create! 🎨", "Your creativity inspires us! ✨"],
+            default: ["Sending good vibes your way! ✨", "Hope you have an amazing day! 🌟"]
+        };
+
+        // Get random comment
+        function getRandomComment(type, mood = null) {
+            if (type === 'photo') {
+                return photoComments[Math.floor(Math.random() * photoComments.length)];
+            } else if (type === 'mood' && mood) {
+                const moodLower = mood.toLowerCase();
+                for (let key in moodComments) {
+                    if (moodLower.includes(key)) {
+                        const comments = moodComments[key];
+                        return comments[Math.floor(Math.random() * comments.length)];
+                    }
+                }
+                return moodComments.default[Math.floor(Math.random() * moodComments.default.length)];
+            }
+            return "Great post! 👍";
+        }
+
+        // Store selected image
+        let selectedImageFile = null;
+        let selectedImageDataUrl = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Get user info
+            const userName = sessionStorage.getItem('user_name');
+            const userId = sessionStorage.getItem('user_id');
+            
+            if (userName) {
+                document.getElementById('userName').textContent = `Hey ${userName}! 👋`;
+            }
+
+            // Gallery button
+            document.getElementById('galleryBtn').addEventListener('click', () => {
+                document.getElementById('galleryInput').click();
+            });
+
+            // Camera button
+            document.getElementById('cameraBtn').addEventListener('click', () => {
+                document.getElementById('cameraInput').click();
+            });
+
+            // Handle file selection
+            document.getElementById('galleryInput').addEventListener('change', handleFileSelect);
+            document.getElementById('cameraInput').addEventListener('change', handleFileSelect);
+
+            function handleFileSelect(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    selectedImageFile = file;
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        selectedImageDataUrl = event.target.result;
+                        const preview = document.getElementById('previewImage');
+                        preview.src = selectedImageDataUrl;
+                        preview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+
+            // Post status
+            document.getElementById('postStatusBtn').addEventListener('click', async () => {
+                const mood = document.getElementById('moodInput').value.trim();
+                
+                if (!selectedImageDataUrl && !mood) {
+                    alert('Please add a photo or write your mood! 😊');
+                    return;
+                }
+
+                try {
+                    const statusData = {
+                        user_id: userId,
+                        user_name: userName,
+                        mood: mood,
+                        photo_url: selectedImageDataUrl,
+                        created_at: new Date().toISOString()
+                    };
+
+                    // Save to Supabase
+                    const { data, error } = await supabaseClient
+                        .from('status_posts')
+                        .insert([statusData]);
+
+                    if (error) throw error;
+
+                    alert('Status posted successfully! 🎉');
+                    
+                    // Clear form
+                    document.getElementById('moodInput').value = '';
+                    document.getElementById('previewImage').style.display = 'none';
+                    selectedImageDataUrl = null;
+                    selectedImageFile = null;
+
+                } catch (error) {
+                    console.error('Error posting status:', error);
+                    alert('Error posting status. Please try again!');
+                }
+            });
+
+            // View status button
+            document.getElementById('viewStatusBtn').addEventListener('click', async () => {
+                document.getElementById('statusModal').style.display = 'flex';
+                await loadStatusFeed();
+            });
+
+            // Close modal
+            document.getElementById('closeModal').addEventListener('click', () => {
+                document.getElementById('statusModal').style.display = 'none';
+            });
+
+            // Load status feed
+            async function loadStatusFeed() {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from('status_posts')
+                        .select('*')
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    const feedDiv = document.getElementById('statusFeed');
+                    feedDiv.innerHTML = '';
+
+                    if (data && data.length > 0) {
+                        data.forEach(status => {
+                            const statusItem = document.createElement('div');
+                            statusItem.className = 'status-item';
+                            
+                            let html = `<h4>👤 ${status.user_name}</h4>`;
+                            
+                            if (status.photo_url) {
+                                html += `<img src="${status.photo_url}" alt="Status photo">`;
+                                html += `<div class="comment">${getRandomComment('photo')}</div>`;
+                            }
+                            
+                            if (status.mood) {
+                                html += `<p><strong>Mood:</strong> ${status.mood}</p>`;
+                                html += `<div class="comment">${getRandomComment('mood', status.mood)}</div>`;
+                            }
+                            
+                            statusItem.innerHTML = html;
+                            feedDiv.appendChild(statusItem);
+                        });
+                    } else {
+                        feedDiv.innerHTML = '<p style="color: #fff; text-align: center;">No status posted yet. Be the first! 🚀</p>';
+                    }
+
+                } catch (error) {
+                    console.error('Error loading status feed:', error);
+                }
+            }
+
+            // Profile button (for future profile photo upload)
+            document.getElementById('profileBtn').addEventListener('click', () => {
+                alert('Profile photo feature coming soon! 📸');
+            });
+
+            // Chat button
+            document.getElementById('chatBtn').addEventListener('click', () => {
+                alert('Chat feature coming soon! 💬');
+            });
+        });
+    </script>
+</body>
+</html>
