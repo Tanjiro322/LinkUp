@@ -1,97 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Enter Name</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff6f61">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #ff6f61;
-            color: #fff;
-        }
-        .container {
-            text-align: center;
-            background: rgba(0,0,0,0.2);
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-        }
-        input {
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: none;
-            margin: 12px 0;
-            width: 80%;
-        }
-        button {
-            padding: 14px 28px;
-            font-size: 18px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            background: #20b2aa;
-            color: #fff;
-            font-weight: bold;
-            transition: transform 0.15s;
-        }
-        button:active {
-            transform: scale(1.1);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Enter Name</title>
+<style>
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #ff6f61;
+        color: #fff;
+    }
+    .container {
+        text-align: center;
+        background: rgba(0,0,0,0.2);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    }
+    input {
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: none;
+        margin: 12px 0;
+        width: 80%;
+    }
+    button {
+        padding: 14px 28px;
+        font-size: 18px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        background: #20b2aa;
+        color: #fff;
+        font-weight: bold;
+        transition: transform 0.15s;
+    }
+    button:active {
+        transform: scale(1.1);
+    }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>What's your Name?</h2>
-        <input type="text" id="name" placeholder="Enter your name">
-        <button id="next" type="button">Next</button>
-    </div>
+<div class="container">
+    <h2>What's your Name?</h2>
+    <input type="text" id="name" placeholder="Enter your name">
+    <button id="next">Next</button>
+</div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const nextBtn = document.getElementById('next');
+    nextBtn.addEventListener('click', () => {
+        const nameInput = document.getElementById('name').value.trim();
+        if(!nameInput) {
+            alert('Please enter your name');
+            return;
+        }
 
-            const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
-            const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        // Capitalize first letter
+        const name = nameInput.charAt(0).toUpperCase() + nameInput.slice(1);
 
-            const nextBtn = document.getElementById('next');
+        // Save in localStorage
+        localStorage.setItem('user_name', name);
 
-            nextBtn.addEventListener('click', async () => {
-                let nameInput = document.getElementById('name').value.trim();
-                if (!nameInput) {
-                    alert('Please enter your name');
-                    return;
-                }
-
-                // Convert to proper case
-                const name = nameInput.charAt(0).toUpperCase() + nameInput.slice(1);
-
-                // Immediately navigate after click (in case Supabase hangs)
-                window.location.href = 'details.html';
-
-                try {
-                    const { data, error } = await supabase
-                        .from('profiles')
-                        .insert([{ name }]);
-
-                    if (error) console.error('Supabase insert error:', error);
-                    if (data && data[0] && data[0].id) {
-                        localStorage.setItem('user_id', data[0].id);
-                    }
-
-                } catch (err) {
-                    console.error('Unexpected Supabase error:', err);
-                }
-            });
-        });
-    </script>
+        // Navigate to details.html
+        window.location.href = 'details.html';
+    });
+});
+</script>
 </body>
 </html>
