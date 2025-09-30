@@ -12,32 +12,46 @@
         <h2>What's your Name?</h2>
         <input type="text" id="name" placeholder="Enter your name">
         <button id="next">Next</button>
-        <a href="details.html">
-        </a>
     </div>
 
     <script>
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
+        // Replace these with your real Supabase project URL and anon key
+        const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
         document.getElementById('next').addEventListener('click', async () => {
             const name = document.getElementById('name').value.trim();
-            if (!name) { alert('Please enter your name'); return; }
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
 
-            const { data, error } = await supabase
-                .from('profiles')
-                .insert([{ name }]);
+            try {
+                const { data, error } = await supabase
+                    .from('profiles')
+                    .insert([{ name }]);
 
-            if (error) {
-                console.error(error);
-                alert('Error saving name');
-            } else {
-                localStorage.setItem('user_id', data[0].id);
+                if (error) {
+                    console.error(error);
+                    alert('Error saving name. Please try again.');
+                    return;
+                }
+
+                // Save user id locally
+                if (data && data[0] && data[0].id) {
+                    localStorage.setItem('user_id', data[0].id);
+                }
+
+                // Navigate to details.html
                 window.location.href = 'details.html';
+            } catch (err) {
+                console.error(err);
+                alert('Unexpected error occurred.');
             }
         });
     </script>
 </body>
 </html>
+
 
