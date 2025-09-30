@@ -1,10 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Clubhouse</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="api-queue.js"></script>
     <style>
         * {
             margin: 0;
@@ -345,6 +349,81 @@
         .hidden {
             display: none;
         }
+
+        /* PWA Install Popup */
+        .install-popup {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 20px 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: none;
+            animation: slideUp 0.5s ease;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateX(-50%) translateY(100px); opacity: 0; }
+            to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        }
+        
+        .install-popup h3 {
+            color: #fff;
+            margin-bottom: 10px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .install-popup p {
+            color: #fff;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .install-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .install-btn-yes, .install-btn-no {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            font-size: 16px;
+        }
+        
+        .install-btn-yes {
+            background: #fff;
+            color: #667eea;
+            flex: 1;
+        }
+        
+        .install-btn-yes:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+        }
+        
+        .install-btn-no {
+            background: rgba(255, 255, 255, 0.3);
+            color: #fff;
+            flex: 1;
+        }
+        
+        .install-btn-no:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -404,6 +483,16 @@
         </div>
     </div>
 
+    <!-- PWA Install Popup -->
+    <div class="install-popup" id="installPopup">
+        <h3>📱 Add to Home Screen</h3>
+        <p>Install The Clubhouse for quick access and a better experience!</p>
+        <div class="install-buttons">
+            <button class="install-btn-yes" id="installBtnYes">Install App</button>
+            <button class="install-btn-no" id="installBtnNo">Not Now</button>
+        </div>
+    </div>
+
     <script>
         // ========================================
         // SUPABASE CONFIGURATION
@@ -413,6 +502,48 @@
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // PWA INSTALL FUNCTIONALITY
+        // ========================================
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install popup after 3 seconds
+            setTimeout(() => {
+                const installPopup = document.getElementById('installPopup');
+                if (installPopup) {
+                    installPopup.style.display = 'block';
+                }
+            }, 3000);
+        });
+
+        // Install button click
+        document.getElementById('installBtnYes').addEventListener('click', async () => {
+            const installPopup = document.getElementById('installPopup');
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                console.log(`User response: ${outcome}`);
+                deferredPrompt = null;
+            }
+            installPopup.style.display = 'none';
+        });
+
+        // Not now button click
+        document.getElementById('installBtnNo').addEventListener('click', () => {
+            document.getElementById('installPopup').style.display = 'none';
+        });
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(reg => console.log('Service Worker registered successfully', reg))
+                .catch(err => console.log('Service Worker registration failed', err));
+        }
 
         // Random comments for photos and moods
         const photoComments = [
@@ -458,9 +589,17 @@
         let selectedImageDataUrl = null;
 
         document.addEventListener('DOMContentLoaded', async () => {
-            // Get user info
+            // ============================================
+            // CHECK IF USER IS LOGGED IN
+            // ============================================
             const userName = sessionStorage.getItem('user_name');
             const userId = sessionStorage.getItem('user_id');
+            
+            if (!userId || !userName) {
+                console.log('No user session found. Redirecting to login...');
+                window.location.href = 'name.html';
+                return;
+            }
             
             if (userName) {
                 document.getElementById('userName').textContent = `Hey ${userName}! 👋`;
@@ -513,12 +652,22 @@
                         created_at: new Date().toISOString()
                     };
 
-                    // Save to Supabase
-                    const { data, error } = await supabaseClient
-                        .from('status_posts')
-                        .insert([statusData]);
-
-                    if (error) throw error;
+                    // Use API Queue Manager if available
+                    if (typeof apiQueue !== 'undefined') {
+                        await apiQueue.enqueue(async () => {
+                            const { data, error } = await supabaseClient
+                                .from('status_posts')
+                                .insert([statusData]);
+                            if (error) throw error;
+                            return data;
+                        });
+                    } else {
+                        // Fallback to direct API call
+                        const { data, error } = await supabaseClient
+                            .from('status_posts')
+                            .insert([statusData]);
+                        if (error) throw error;
+                    }
 
                     alert('Status posted successfully! 🎉');
                     
@@ -548,12 +697,27 @@
             // Load status feed
             async function loadStatusFeed() {
                 try {
-                    const { data, error } = await supabaseClient
-                        .from('status_posts')
-                        .select('*')
-                        .order('created_at', { ascending: false });
-
-                    if (error) throw error;
+                    let data;
+                    
+                    // Use API Queue Manager if available
+                    if (typeof apiQueue !== 'undefined') {
+                        data = await apiQueue.enqueue(async () => {
+                            const { data, error } = await supabaseClient
+                                .from('status_posts')
+                                .select('*')
+                                .order('created_at', { ascending: false });
+                            if (error) throw error;
+                            return data;
+                        }, 'status_feed');
+                    } else {
+                        // Fallback to direct API call
+                        const result = await supabaseClient
+                            .from('status_posts')
+                            .select('*')
+                            .order('created_at', { ascending: false });
+                        if (result.error) throw result.error;
+                        data = result.data;
+                    }
 
                     const feedDiv = document.getElementById('statusFeed');
                     feedDiv.innerHTML = '';
