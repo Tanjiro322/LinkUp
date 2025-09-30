@@ -537,6 +537,87 @@
         document.getElementById('installBtnNo').addEventListener('click', () => {
             document.getElementById('installPopup').style.display = 'none';
         });
+        // Profile button - Add/Update profile photo
+document.getElementById('profileBtn').addEventListener('click', () => {
+    // Create temporary modal for profile photo
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.id = 'profileModal';
+    modal.style.display = 'flex';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <span class="close-modal" id="closeProfileModal">&times;</span>
+            <h2 style="color: #fff; margin-bottom: 20px;">Update Profile Photo</h2>
+            <div class="photo-upload">
+                <button class="upload-btn" id="profileGalleryBtn">📷 Gallery</button>
+                <button class="upload-btn" id="profileCameraBtn">📸 Camera</button>
+            </div>
+            <input type="file" id="profileGalleryInput" accept="image/*">
+            <input type="file" id="profileCameraInput" accept="image/*" capture="environment">
+            <img id="profilePreviewImage" class="preview-image" alt="Preview">
+            <button class="post-btn" id="saveProfilePhotoBtn">Save Photo 💾</button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Close modal
+    document.getElementById('closeProfileModal').addEventListener('click', () => {
+        modal.remove();
+    });
+
+    // Gallery & Camera buttons
+    document.getElementById('profileGalleryBtn').addEventListener('click', () => {
+        document.getElementById('profileGalleryInput').click();
+    });
+    document.getElementById('profileCameraBtn').addEventListener('click', () => {
+        document.getElementById('profileCameraInput').click();
+    });
+
+    // Handle file selection
+    let profileImageFile = null;
+    let profileImageDataUrl = null;
+
+    function handleProfileFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            profileImageFile = file;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                profileImageDataUrl = event.target.result;
+                const preview = document.getElementById('profilePreviewImage');
+                preview.src = profileImageDataUrl;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('profileGalleryInput').addEventListener('change', handleProfileFileSelect);
+    document.getElementById('profileCameraInput').addEventListener('change', handleProfileFileSelect);
+
+    // Save button
+    document.getElementById('saveProfilePhotoBtn').addEventListener('click', async () => {
+        if (!profileImageDataUrl) {
+            alert('Please select a photo! 😊');
+            return;
+        }
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('profiles') // make sure your table has columns: user_id, photo_url
+                .upsert({ user_id: userId, photo_url: profileImageDataUrl });
+
+            if (error) throw error;
+
+            alert('Photo updated successfully! 😍 ' + getRandomComment('photo'));
+            modal.remove();
+        } catch (err) {
+            console.error('Error saving profile photo:', err);
+            alert('Failed to save photo. Please try again!');
+        }
+    });
+});
+
 
         // Register Service Worker
         if ('serviceWorker' in navigator) {
@@ -703,9 +784,11 @@ document.getElementById('installBtnYes').addEventListener('click', async () => {
             });
 
             // View status button
-            document.getElementById('viewStatusBtn').addEventListener('click', async () => {
-                document.getElementById('statusModal').style.display = 'flex';
-                await loadStatusFeed();
+           // View status button - navigate to status feed page
+document.getElementById('viewStatusBtn').addEventListener('click', () => {
+    window.location.href = 'status-feed.html';
+});
+
             });
 
             // Close modal
@@ -770,10 +853,7 @@ document.getElementById('installBtnYes').addEventListener('click', async () => {
                 }
             }
 
-            // Profile button (for future profile photo upload)
-            document.getElementById('profileBtn').addEventListener('click', () => {
-                alert('Profile photo feature coming soon! 📸');
-            });
+           
 
             // Chat button
             document.getElementById('chatBtn').addEventListener('click', () => {
@@ -783,4 +863,5 @@ document.getElementById('installBtnYes').addEventListener('click', async () => {
     </script>
 </body>
 </html>
+
 
