@@ -1,33 +1,80 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Enter Name</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#ff6f61">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+            background: #ff6f61;
+            color: #fff;
+        }
+        .container {
+            text-align: center;
+            background: rgba(0,0,0,0.2);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin: 12px 0;
+            width: 80%;
+        }
+        button {
+            padding: 14px 28px;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            background: #20b2aa;
+            color: #fff;
+            font-weight: bold;
+            transition: transform 0.15s;
+        }
+        button:active {
+            transform: scale(1.1);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h2>What's your Name?</h2>
         <input type="text" id="name" placeholder="Enter your name">
-        <button id="next" href="details.html">Next</button>
+        <button id="next">Next</button>
     </div>
 
     <script>
-        // Replace these with your real Supabase project URL and anon key
+        // Your Supabase project credentials
         const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
         const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        document.getElementById('next').addEventListener('click', async () => {
-            const name = document.getElementById('name').value.trim();
+        const nextBtn = document.getElementById('next');
+
+        nextBtn.addEventListener('click', async () => {
+            let name = document.getElementById('name').value.trim();
             if (!name) {
                 alert('Please enter your name');
                 return;
             }
 
+            // Optional: convert to proper case (capitalize first letter)
+            name = name.charAt(0).toUpperCase() + name.slice(1);
+
             try {
+                // Insert name into Supabase
                 const { data, error } = await supabase
                     .from('profiles')
                     .insert([{ name }]);
@@ -38,7 +85,7 @@
                     return;
                 }
 
-                // Save user id locally
+                // Save the user id locally for next page
                 if (data && data[0] && data[0].id) {
                     localStorage.setItem('user_id', data[0].id);
                 }
@@ -54,5 +101,4 @@
 </body>
 </html>
 
-
-
+        
