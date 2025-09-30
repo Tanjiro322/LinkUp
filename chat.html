@@ -1,0 +1,316 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>✨ Chat Universe ✨</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+    /* ---------- General Styles ---------- */
+    body {
+        font-family: 'Rubik', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #ff6ec4, #7873f5, #42f5d4);
+        background-size: 600% 600%;
+        animation: gradientBG 15s ease infinite;
+        color: #fff;
+        overflow: hidden;
+    }
+
+    @keyframes gradientBG {
+        0%{background-position:0% 50%}
+        50%{background-position:100% 50%}
+        100%{background-position:0% 50%}
+    }
+
+    /* ---------- Header ---------- */
+    header {
+        padding: 20px;
+        font-size: 1.5rem;
+        text-align: center;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff69b4;
+    }
+
+    /* ---------- Search Box ---------- */
+    .search-container {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0 20px 0;
+    }
+    .search-container input {
+        width: 80%;
+        padding: 10px;
+        border-radius: 25px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        box-shadow: 0 0 10px #fff, 0 0 20px #42f5d4 inset;
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+    .search-container input::placeholder {
+        color: rgba(255,255,255,0.7);
+    }
+
+    /* ---------- User List ---------- */
+    #userList {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-y: auto;
+        height: calc(100vh - 180px);
+        padding-bottom: 20px;
+    }
+
+    .user-card {
+        width: 90%;
+        background: rgba(255,255,255,0.15);
+        border-radius: 15px;
+        padding: 15px;
+        margin: 10px 0;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 5px #fff, 0 0 15px #ff69b4;
+    }
+
+    .user-card:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 10px #fff, 0 0 25px #42f5d4;
+    }
+
+    .user-card img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        margin-right: 15px;
+        border: 2px solid #fff;
+    }
+
+    .user-card span {
+        font-size: 1.2rem;
+        font-weight: 500;
+    }
+
+    /* ---------- Chat Window ---------- */
+    #chatWindow {
+        display: none;
+        flex-direction: column;
+        height: 100vh;
+        background: rgba(0,0,0,0.3);
+        padding-top: 60px;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        padding: 15px;
+        background: rgba(0,0,0,0.5);
+        text-align: center;
+        font-weight: bold;
+        font-size: 1.3rem;
+        text-shadow: 0 0 10px #fff;
+    }
+
+    #messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .message {
+        max-width: 70%;
+        margin: 5px 0;
+        padding: 10px 15px;
+        border-radius: 20px;
+        box-shadow: 0 0 5px #fff inset;
+        animation: fadeIn 0.3s ease;
+        word-wrap: break-word;
+    }
+
+    .sent {
+        align-self: flex-end;
+        background: rgba(255,255,255,0.4);
+        color: #000;
+    }
+
+    .received {
+        align-self: flex-start;
+        background: rgba(255,255,255,0.2);
+    }
+
+    @keyframes fadeIn {
+        from {opacity:0; transform: translateY(10px);}
+        to {opacity:1; transform: translateY(0);}
+    }
+
+    /* ---------- Input Box ---------- */
+    #chatInputContainer {
+        display: flex;
+        padding: 10px;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background: rgba(0,0,0,0.5);
+    }
+
+    #chatInputContainer input {
+        flex: 1;
+        padding: 12px 20px;
+        border-radius: 25px;
+        border: none;
+        outline: none;
+        font-size: 1rem;
+        margin-right: 10px;
+    }
+
+    #chatInputContainer button {
+        padding: 12px 20px;
+        border-radius: 25px;
+        border: none;
+        background: #ff69b4;
+        color: #fff;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 0 10px #fff, 0 0 20px #ff69b4;
+        transition: all 0.3s ease;
+    }
+
+    #chatInputContainer button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px #fff, 0 0 30px #42f5d4;
+    }
+
+</style>
+</head>
+
+<body>
+
+<header>✨ Who do you want to chat with? ✨</header>
+
+<div class="search-container">
+    <input type="text" id="searchUser" placeholder="Search users...">
+</div>
+
+<div id="userList"></div>
+
+<!-- Chat Window -->
+<div id="chatWindow">
+    <div class="chat-header">
+        <span id="chatWithName"></span> 
+        <button onclick="backToUserList()" style="float:right;padding:5px 10px;border:none;border-radius:10px;cursor:pointer;">Back</button>
+    </div>
+    <div id="messages"></div>
+    <div id="chatInputContainer">
+        <input type="text" id="chatInput" placeholder="Type a message...">
+        <button id="sendBtn">Send</button>
+    </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentChatUser = null;
+
+// ---------- Load Users ----------
+async function loadUsers() {
+    const { data: users, error } = await supabaseClient.from('profiles').select('*');
+    if(error) return console.error(error);
+    renderUserList(users);
+}
+
+// ---------- Render Users ----------
+function renderUserList(users) {
+    const listDiv = document.getElementById('userList');
+    listDiv.innerHTML = '';
+    users.forEach(user => {
+        const card = document.createElement('div');
+        card.className = 'user-card';
+        card.innerHTML = `<img src="${user.avatar_url || 'https://via.placeholder.com/50'}"><span>${user.name}</span>`;
+        card.addEventListener('click', () => openChat(user));
+        listDiv.appendChild(card);
+    });
+}
+
+// ---------- Search ----------
+document.getElementById('searchUser').addEventListener('input', async (e) => {
+    const query = e.target.value.toLowerCase();
+    const { data: users } = await supabaseClient.from('profiles').select('*');
+    const filtered = users.filter(u => u.name.toLowerCase().includes(query));
+    renderUserList(filtered);
+});
+
+// ---------- Open Chat ----------
+function openChat(user) {
+    currentChatUser = user;
+    document.getElementById('chatWithName').innerText = user.name;
+    document.getElementById('chatWindow').style.display = 'flex';
+    document.getElementById('userList').style.display = 'none';
+    document.querySelector('.search-container').style.display = 'none';
+    loadMessages();
+}
+
+// ---------- Back ----------
+function backToUserList() {
+    document.getElementById('chatWindow').style.display = 'none';
+    document.getElementById('userList').style.display = 'flex';
+    document.querySelector('.search-container').style.display = 'flex';
+    document.getElementById('messages').innerHTML = '';
+    currentChatUser = null;
+}
+
+// ---------- Load Messages ----------
+async function loadMessages() {
+    const { data: messages, error } = await supabaseClient
+        .from('chats')
+        .select('*')
+        .or(`sender_id.eq.${currentChatUser.id},receiver_id.eq.${currentChatUser.id}`)
+        .order('timestamp', { ascending: true });
+
+    if(error) return console.error(error);
+
+    const messagesDiv = document.getElementById('messages');
+    messagesDiv.innerHTML = '';
+    messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'message ' + (msg.sender_id === currentChatUser.id ? 'received' : 'sent');
+        div.innerText = msg.message;
+        messagesDiv.appendChild(div);
+    });
+
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+
+// ---------- Send Message ----------
+document.getElementById('sendBtn').addEventListener('click', async () => {
+    const input = document.getElementById('chatInput');
+    if(!input.value.trim()) return;
+
+    await supabaseClient.from('chats').insert([{
+        sender_id: 'CURRENT_USER_ID',
+        receiver_id: currentChatUser.id,
+        message: input.value,
+        timestamp: new Date()
+    }]);
+
+    input.value = '';
+    loadMessages();
+});
+
+// Initial load
+loadUsers();
+</script>
+
+</body>
+</html>
