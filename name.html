@@ -59,7 +59,7 @@
         document.addEventListener('DOMContentLoaded', () => {
 
             const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
-            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+            const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
             const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
             const nextBtn = document.getElementById('next');
@@ -71,34 +71,26 @@
                     return;
                 }
 
-                // Convert to proper case: first letter capitalized
+                // Convert to proper case
                 const name = nameInput.charAt(0).toUpperCase() + nameInput.slice(1);
+
+                // Immediately navigate after click (in case Supabase hangs)
+                window.location.href = 'details.html';
 
                 try {
                     const { data, error } = await supabase
                         .from('profiles')
                         .insert([{ name }]);
 
-                    if (error) {
-                        console.error('Supabase insert error:', error);
-                        // Don't block navigation, just warn
-                        alert('Error saving name to database. You will still proceed.');
-                    }
-
-                    // Save user id locally if available
+                    if (error) console.error('Supabase insert error:', error);
                     if (data && data[0] && data[0].id) {
                         localStorage.setItem('user_id', data[0].id);
                     }
 
                 } catch (err) {
-                    console.error('Unexpected error:', err);
-                    // Proceed anyway
+                    console.error('Unexpected Supabase error:', err);
                 }
-
-                // Always navigate to details.html
-                window.location.href = 'details.html';
             });
-
         });
     </script>
 </body>
