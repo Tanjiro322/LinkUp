@@ -544,6 +544,22 @@
                 .then(reg => console.log('Service Worker registered successfully', reg))
                 .catch(err => console.log('Service Worker registration failed', err));
         }
+        if (localStorage.getItem('pwa_installed')) {
+    document.getElementById('installPopup').style.display = 'none';
+}
+
+document.getElementById('installBtnYes').addEventListener('click', async () => {
+    if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+            localStorage.setItem('pwa_installed', 'true'); // remember installation
+        }
+        deferredPrompt = null;
+    }
+    document.getElementById('installPopup').style.display = 'none';
+});
+
 
         // Random comments for photos and moods
         const photoComments = [
@@ -592,9 +608,12 @@
             // ============================================
             // CHECK IF USER IS LOGGED IN
             // ============================================
-            const userName = sessionStorage.getItem('user_name');
-            const userId = sessionStorage.getItem('user_id');
-            
+            const userName = localStorage.getItem('user_name');
+            const userId = localStorage.getItem('user_id');
+            localStorage.setItem('user_name', name);
+            localStorage.setItem('user_id', data[0].id); // from Supabase insert
+
+
             if (!userId || !userName) {
                 console.log('No user session found. Redirecting to login...');
                 window.location.href = 'name.html';
@@ -764,3 +783,4 @@
     </script>
 </body>
 </html>
+
