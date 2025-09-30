@@ -1,55 +1,358 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Enter Details</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tell Us More</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#ff6f61">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+    <meta name="theme-color" content="#667eea">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            overflow: hidden;
+            perspective: 1000px;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 450px;
+            width: 90%;
+            animation: slideIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: rotateY(-90deg);
+                opacity: 0;
+            }
+            to {
+                transform: rotateY(0);
+                opacity: 1;
+            }
+        }
+        
+        h2 {
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .greeting {
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 20px;
+            animation: fadeIn 1s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        input, select {
+            padding: 16px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin: 12px 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            transition: all 0.3s ease;
+            outline: none;
+        }
+        
+        input:focus, select:focus {
+            border-color: #f093fb;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.4);
+        }
+        
+        input::placeholder {
+            color: #999;
+        }
+        
+        select {
+            cursor: pointer;
+            color: #333;
+        }
+        
+        select option {
+            background: #fff;
+        }
+        
+        button {
+            padding: 18px 40px;
+            font-size: 20px;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+        }
+        
+        button:active::before {
+            width: 400px;
+            height: 400px;
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .emoji {
+            font-size: 48px;
+            margin-bottom: 15px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .error {
+            color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+        
+        .mood-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        
+        .mood-tag {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            color: #fff;
+        }
+        
+        .mood-tag:hover {
+            background: rgba(255, 255, 255, 0.5);
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <div class="emoji">✨</div>
+        <div class="greeting" id="greeting"></div>
         <h2>Tell us more about you</h2>
-        <input type="text" id="class" placeholder="Class">
-        <input type="number" id="age" placeholder="Age">
+        
+        <input type="text" id="class" placeholder="What class are you in?" autocomplete="off">
+        <input type="number" id="age" placeholder="Your age" min="1" max="120">
+        
         <select id="gender">
             <option value="">Select Gender</option>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Other">Other</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
         </select>
-        <input type="text" id="mood" placeholder="Mood">
-
-        <button id="clubhouse">INTO THE CLUBHOUSE!!!!</button>
+        
+        <input type="text" id="mood" placeholder="What's your vibe today?" autocomplete="off">
+        
+        <div class="mood-suggestions">
+            <span class="mood-tag" data-mood="excited">😄 Excited</span>
+            <span class="mood-tag" data-mood="chill">😎 Chill</span>
+            <span class="mood-tag" data-mood="motivated">💪 Motivated</span>
+            <span class="mood-tag" data-mood="creative">🎨 Creative</span>
+        </div>
+        
+        <div class="error" id="error"></div>
+        <button id="clubhouse">INTO THE CLUBHOUSE 🎉</button>
     </div>
 
     <script>
-        const supabaseUrl = 'YOUR_SUPABASE_URL';
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
-
-        document.getElementById('clubhouse').addEventListener('click', async () => {
-            const userId = localStorage.getItem('user_id');
-            const userClass = document.getElementById('class').value.trim();
-            const age = parseInt(document.getElementById('age').value);
-            const gender = document.getElementById('gender').value;
-            const mood = document.getElementById('mood').value.trim();
-
-            if (!userClass || !age || !gender || !mood) {
-                alert('Please fill all fields');
-                return;
+        // ========================================
+        // SUPABASE CONFIGURATION
+        // Replace these with your actual Supabase credentials
+        // ========================================
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // ========================================
+        // AUDIO CONFIGURATION
+        // Replace 'your-audio-file.mp3' with your actual audio file name
+        // Place the audio file in the same directory as this HTML file
+        // ========================================
+        const CLUBHOUSE_AUDIO = 'your-audio-file.mp3';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Initialize audio
+        const audio = new Audio(CLUBHOUSE_AUDIO);
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get user name and display greeting
+            const userName = sessionStorage.getItem('user_name');
+            const greeting = document.getElementById('greeting');
+            
+            if (userName) {
+                greeting.textContent = `Hey ${userName}! 👋`;
             }
-
-            const { data, error } = await supabase
-                .from('profiles')
-                .update({ class: userClass, age, gender, mood })
-                .eq('id', userId);
-
-            if (error) {
-                console.error(error);
-                alert('Error saving details');
-            } else {
-                window.location.href = 'main.html';
+            
+            // Get elements
+            const classInput = document.getElementById('class');
+            const ageInput = document.getElementById('age');
+            const genderSelect = document.getElementById('gender');
+            const moodInput = document.getElementById('mood');
+            const clubhouseBtn = document.getElementById('clubhouse');
+            const errorDiv = document.getElementById('error');
+            
+            // Mood tag functionality
+            document.querySelectorAll('.mood-tag').forEach(tag => {
+                tag.addEventListener('click', () => {
+                    moodInput.value = tag.dataset.mood;
+                    moodInput.focus();
+                });
+            });
+            
+            // Hide error when user types
+            [classInput, ageInput, genderSelect, moodInput].forEach(element => {
+                element.addEventListener('input', () => {
+                    errorDiv.style.display = 'none';
+                });
+            });
+            
+            // Main submission
+            clubhouseBtn.addEventListener('click', async () => {
+                const userId = sessionStorage.getItem('user_id');
+                const userClass = classInput.value.trim();
+                const age = parseInt(ageInput.value);
+                const gender = genderSelect.value;
+                const mood = moodInput.value.trim();
+                
+                // Validation
+                if (!userClass) {
+                    showError('Please tell us your class 📚');
+                    classInput.focus();
+                    return;
+                }
+                
+                if (!age || age < 1 || age > 120) {
+                    showError('Please enter a valid age 🎂');
+                    ageInput.focus();
+                    return;
+                }
+                
+                if (!gender) {
+                    showError('Please select your gender 🌈');
+                    genderSelect.focus();
+                    return;
+                }
+                
+                if (!mood) {
+                    showError('Tell us your vibe! 💭');
+                    moodInput.focus();
+                    return;
+                }
+                
+                if (!userId) {
+                    showError('Session expired. Please start over.');
+                    setTimeout(() => {
+                        window.location.href = 'name.html';
+                    }, 2000);
+                    return;
+                }
+                
+                // Disable button
+                clubhouseBtn.disabled = true;
+                clubhouseBtn.textContent = 'Getting everything ready... ✨';
+                
+                try {
+                    // Update user data in Supabase
+                    const { data, error } = await supabaseClient
+                        .from('profiles')
+                        .update({ 
+                            class: userClass, 
+                            age: age, 
+                            gender: gender, 
+                            mood: mood 
+                        })
+                        .eq('id', userId)
+                        .select();
+                    
+                    if (error) throw error;
+                    
+                    // Play audio
+                    audio.play().catch(err => {
+                        console.log('Audio playback failed:', err);
+                        // Continue to next page even if audio fails
+                    });
+                    
+                    // Navigate after short delay
+                    setTimeout(() => {
+                        window.location.href = 'main.html';
+                    }, 1000);
+                    
+                } catch (error) {
+                    console.error('Error saving details:', error);
+                    showError('Oops! Something went wrong. Please try again. 😕');
+                    clubhouseBtn.disabled = false;
+                    clubhouseBtn.textContent = 'INTO THE CLUBHOUSE 🎉';
+                }
+            });
+            
+            function showError(message) {
+                errorDiv.textContent = message;
+                errorDiv.style.display = 'block';
             }
         });
     </script>
