@@ -18,7 +18,8 @@
     <div class="greeting" id="greeting"></div>
     <h2>Tell us more about you</h2>
 
-    <input type="text" id="class" placeholder="What class are you in?" autocomplete="off">
+    <!-- fixed: renamed id -->
+    <input type="text" id="classInputField" placeholder="What class are you in?" autocomplete="off">
     <input type="number" id="age" placeholder="Your age" min="1" max="120">
 
     <select id="gender">
@@ -38,17 +39,17 @@
       <span class="mood-tag" data-mood="creative">🎨 Creative</span>
     </div>
 
-    <!-- ✅ Missing button added -->
+    <!-- button -->
     <button id="clubhouse">INTO THE CLUBHOUSE 🎉</button>
 
-    <!-- ✅ Missing error div added -->
+    <!-- error div -->
     <div id="error" class="error"></div>
   </div>
 
   <script>
     const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY-HERE';
-    const CLUBHOUSE_AUDIO = 'your-audio-file.mp3';
+    const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY-HERE'; // replace with your real anon key
+    const CLUBHOUSE_AUDIO = 'well.mp4';
 
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     const audio = new Audio(CLUBHOUSE_AUDIO);
@@ -58,7 +59,7 @@
       const greeting = document.getElementById('greeting');
       if (userName) greeting.textContent = `Hey ${userName}! 👋`;
 
-      const classInput = document.getElementById('class');
+      const classInput = document.getElementById('classInputField');
       const ageInput = document.getElementById('age');
       const genderSelect = document.getElementById('gender');
       const moodInput = document.getElementById('mood');
@@ -110,7 +111,7 @@
           audio.play().catch(err => console.log('Audio failed:', err));
 
           setTimeout(() => {
-            // ✅ Fixed: go to mainpage.html
+            // ✅ Goes to mainpage.html
             window.location.href = 'mainpage.html';
           }, 1000);
 
@@ -130,10 +131,5 @@
   </script>
 </body>
 </html>
-
-
-
-
-
 
 
