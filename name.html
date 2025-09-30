@@ -56,50 +56,50 @@
     </div>
 
     <script>
-        // Your Supabase project credentials
-        const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+        document.addEventListener('DOMContentLoaded', () => {
 
-        const nextBtn = document.getElementById('next');
+            const supabaseUrl = 'https://yqzlwsmpkqeocyhduizf.supabase.co/';
+            const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+            const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-        nextBtn.addEventListener('click', async () => {
-            let name = document.getElementById('name').value.trim();
-            if (!name) {
-                alert('Please enter your name');
-                return;
-            }
+            const nextBtn = document.getElementById('next');
 
-            // Optional: convert to proper case (capitalize first letter)
-            name = name.charAt(0).toUpperCase() + name.slice(1);
-
-            try {
-                // Insert name into Supabase
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .insert([{ name }]);
-
-                if (error) {
-                    console.error(error);
-                    alert('Error saving name. Please try again.');
+            nextBtn.addEventListener('click', async () => {
+                let nameInput = document.getElementById('name').value.trim();
+                if (!nameInput) {
+                    alert('Please enter your name');
                     return;
                 }
 
-                // Save the user id locally for next page
-                if (data && data[0] && data[0].id) {
-                    localStorage.setItem('user_id', data[0].id);
+                // Convert to proper case: first letter capitalized
+                const name = nameInput.charAt(0).toUpperCase() + nameInput.slice(1);
+
+                try {
+                    const { data, error } = await supabase
+                        .from('profiles')
+                        .insert([{ name }]);
+
+                    if (error) {
+                        console.error('Supabase insert error:', error);
+                        // Don't block navigation, just warn
+                        alert('Error saving name to database. You will still proceed.');
+                    }
+
+                    // Save user id locally if available
+                    if (data && data[0] && data[0].id) {
+                        localStorage.setItem('user_id', data[0].id);
+                    }
+
+                } catch (err) {
+                    console.error('Unexpected error:', err);
+                    // Proceed anyway
                 }
 
-                // Navigate to details.html
+                // Always navigate to details.html
                 window.location.href = 'details.html';
-            } catch (err) {
-                console.error(err);
-                alert('Unexpected error occurred.');
-            }
+            });
+
         });
     </script>
 </body>
 </html>
-
-        
-
