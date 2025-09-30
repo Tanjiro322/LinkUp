@@ -4,7 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>What's Your Name?</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#667eea">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="api-queue.js"></script>
 <style>
     * {
         margin: 0;
@@ -155,14 +158,26 @@
 // SUPABASE CONFIGURATION
 // Replace these with your actual Supabase credentials
 // ========================================
-const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-// Initialize Supabase client using the global supabase object
 const { createClient } = supabase;
 const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 document.addEventListener('DOMContentLoaded', () => {
+    // ============================================
+    // CHECK IF ALREADY LOGGED IN
+    // If user already has session, go directly to main page
+    // ============================================
+    const existingUserId = sessionStorage.getItem('user_id');
+    const existingUserName = sessionStorage.getItem('user_name');
+    
+    if (existingUserId && existingUserName) {
+        console.log('User already logged in. Redirecting to main page...');
+        window.location.href = 'main.html';
+        return;
+    }
+    
     const nameInput = document.getElementById('name');
     const nextBtn = document.getElementById('next');
     const container = document.getElementById('container');
@@ -207,18 +222,21 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('Attempting to save to Supabase...');
             
-            // Insert user data into Supabase
-            const { data, error } = await supabaseClient
-                .from('profiles')
-                .insert([{ name: name }])
-                .select();
-            
-            if (error) {
-                console.error('Supabase error:', error);
-                throw error;
-            }
-            
-            console.log('Data saved successfully:', data);
+            // Use API Queue Manager for thread-safe registration
+            const data = await apiQueue.enqueue(async () => {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .insert([{ name: name }])
+                    .select();
+                
+                if (error) {
+                    console.error('Supabase error:', error);
+                    throw error;
+                }
+                
+                console.log('Data saved successfully:', data);
+                return data;
+            });
             
             // Store user ID and name
             if (data && data.length > 0 && data[0].id) {
