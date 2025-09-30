@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Status Feed</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    body { font-family: sans-serif; background: #667eea; color: #fff; padding: 20px; }
+    .status-item { background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px; margin: 10px 0; }
+    .status-item img { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+    .comment { font-style: italic; margin-top: 5px; color: #fff; }
+</style>
+</head>
+<body>
+<h1>📱 Today's Status Feed</h1>
+<div id="statusFeed"></div>
+
+<script>
+const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'; // replace with your key
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Random comments
+const photoComments = [
+    "You looking gorgeous today! 😍",
+    "Oh wow, just beautiful! ✨",
+    "Stunning! 🔥",
+    "Love this vibe! 💯",
+    "Absolutely amazing! 🌟",
+    "You're glowing! ✨",
+    "Perfection! 👌"
+];
+
+const moodComments = {
+    happy: ["Keep shining! ☀️", "Your happiness is contagious! 😊"],
+    sad: ["It's OK, don't worry. We're here for you! 🤗", "Tomorrow will be better! 💪"],
+    excited: ["Yesss! Love the energy! 🎉", "Your excitement is infectious! 🔥"],
+    tired: ["Rest up, you deserve it! 😴", "Take it easy today! 💤"],
+    motivated: ["Go crush it! 💪", "That's the spirit! 🚀"],
+    chill: ["Living your best life! 😎", "Vibes on point! 🌊"],
+    creative: ["Can't wait to see what you create! 🎨", "Your creativity inspires us! ✨"],
+    default: ["Sending good vibes your way! ✨", "Hope you have an amazing day! 🌟"]
+};
+
+// Function to get random comment
+function getRandomComment(type, mood = null) {
+    if (type === 'photo') {
+        return photoComments[Math.floor(Math.random() * photoComments.length)];
+    } else if (type === 'mood' && mood) {
+        const moodLower = mood.toLowerCase();
+        for (let key in moodComments) {
+            if (moodLower.includes(key)) {
+                const comments = moodComments[key];
+                return comments[Math.floor(Math.random() * comments.length)];
+            }
+        }
+        return moodComments.default[Math.floor(Math.random() * moodComments.default.length)];
+    }
+    return "Great post! 👍";
+}
+
+// Load today's statuses
+async function loadStatusFeed() {
+    try {
+        const { data, error } = await supabaseClient
+            .from('status_posts')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        const feedDiv = document.getElementById('statusFeed');
+        feedDiv.innerHTML = '';
+
+        // Get today's date in YYYY-MM-DD
+        const today = new Date().toISOString().split('T')[0];
+
+        const todaysData = data.filter(status => {
+            const statusDate = status.created_at.split('T')[0];
+            return statusDate === today;
+        });
+
+        if (todaysData.length > 0) {
+            todaysData.forEach(status => {
+                const div = document.createElement('div');
+                div.className = 'status-item';
+                div.innerHTML = `<h3>👤 ${status.user_name}</h3>`;
+                
+                if (status.photo_url) {
+                    div.innerHTML += `<img src="${status.photo_url}"><div class="comment">${getRandomComment('photo')}</div>`;
+                }
+                if (status.mood) {
+                    div.innerHTML += `<p><strong>Mood:</strong> ${status.mood}</p>`;
+                    div.innerHTML += `<div class="comment">${getRandomComment('mood', status.mood)}</div>`;
+                }
+
+                feedDiv.appendChild(div);
+            });
+        } else {
+            feedDiv.innerHTML = '<p>No statuses posted today. Be the first! 🚀</p>';
+        }
+
+    } catch(err) {
+        console.error(err);
+        document.getElementById('statusFeed').innerHTML = '<p>Error loading statuses. Please try again later.</p>';
+    }
+}
+
+loadStatusFeed();
+</script>
+</body>
+</html>

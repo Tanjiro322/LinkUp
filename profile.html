@@ -1,0 +1,138 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profile Photo — Clubhouse</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 20px;
+        color: #fff;
+    }
+    h1 { margin: 20px 0; text-align: center; }
+    .photo-container {
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        overflow: hidden;
+        margin: 20px 0;
+        border: 4px solid #fff;
+        background: rgba(255,255,255,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .photo-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    .btn {
+        padding: 12px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        font-weight: bold;
+        background: linear-gradient(135deg, #f093fb, #f5576c);
+        color: #fff;
+        font-size: 16px;
+    }
+    #previewImage { display: none; }
+</style>
+</head>
+<body>
+
+<h1>Update Your Profile Photo</h1>
+
+<div class="photo-container" id="profilePhotoContainer">
+    <span>📷</span>
+</div>
+
+<div>
+    <button class="btn" id="galleryBtn">Gallery</button>
+    <button class="btn" id="cameraBtn">Camera</button>
+</div>
+
+<input type="file" id="galleryInput" accept="image/*">
+<input type="file" id="cameraInput" accept="image/*" capture="environment">
+
+<button class="btn" id="savePhotoBtn">Save Photo</button>
+
+<script>
+const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+
+const { createClient } = supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let selectedImageFile = null;
+let selectedImageDataUrl = null;
+
+// Load current profile if exists
+const userName = localStorage.getItem('user_name');
+const userId = localStorage.getItem('user_id');
+
+document.addEventListener('DOMContentLoaded', async () => {
+    if (!userName || !userId) {
+        alert('No user found! Redirecting...');
+        window.location.href = 'name.html';
+        return;
+    }
+
+    // Gallery & Camera buttons
+    document.getElementById('galleryBtn').addEventListener('click', () => {
+        document.getElementById('galleryInput').click();
+    });
+    document.getElementById('cameraBtn').addEventListener('click', () => {
+        document.getElementById('cameraInput').click();
+    });
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (file) {
+            selectedImageFile = file;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                selectedImageDataUrl = event.target.result;
+                const container = document.getElementById('profilePhotoContainer');
+                container.innerHTML = `<img src="${selectedImageDataUrl}" alt="Profile Photo">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    document.getElementById('galleryInput').addEventListener('change', handleFileSelect);
+    document.getElementById('cameraInput').addEventListener('change', handleFileSelect);
+
+    // Save photo
+    document.getElementById('savePhotoBtn').addEventListener('click', async () => {
+        if (!selectedImageDataUrl) {
+            alert('Please select a photo first! 😊');
+            return;
+        }
+
+        try {
+            const { data, error } = await supabaseClient
+                .from('profiles')  // make sure this table exists
+                .upsert([{ id: userId, user_name: userName, profile_photo: selectedImageDataUrl }]);
+            if (error) throw error;
+
+            alert('🎉 Photo updated successfully! You look gorgeous today!');
+        } catch (err) {
+            console.error(err);
+            alert('Error updating photo. Please try again.');
+        }
+    });
+});
+</script>
+</body>
+</html>
