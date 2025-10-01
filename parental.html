@@ -1,172 +1,131 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parental Consent Vibes ✨</title>
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif; /* Modern font, grab from Google Fonts */
-            background: linear-gradient(135deg, #FF69B4, #FFD700, #00FF7F); /* Neon pink, yellow, green gradient for Gen Z energy */
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            animation: gradientShift 10s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white for contrast */
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            max-width: 400px;
-            animation: popIn 0.5s ease;
-        }
-
-        @keyframes popIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        h1 {
-            font-size: 2.5em;
-            color: #FF1493; /* Hot pink */
-            margin-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        input {
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            background: #f0f0f0;
-            transition: box-shadow 0.3s;
-        }
-
-        input:focus {
-            box-shadow: 0 0 10px #FF69B4;
-            outline: none;
-        }
-
-        button {
-            padding: 15px;
-            background: linear-gradient(135deg, #00BFFF, #1E90FF); /* Blue gradient for button */
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-        }
-
-        .emoji {
-            font-size: 1.5em;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parental Consent Vibes ✨</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #FF69B4, #FFD700, #00FF7F);
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      animation: gradientShift 10s ease infinite;
+    }
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      max-width: 400px;
+      animation: popIn 0.5s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    h1 {
+      font-size: 2.5em;
+      color: #FF1493;
+      margin-bottom: 10px;
+    }
+    p { font-size: 1.2em; margin-bottom: 30px; }
+    form { display: flex; flex-direction: column; gap: 15px; }
+    input {
+      padding: 15px;
+      border: none;
+      border-radius: 10px;
+      font-size: 1em;
+      background: #f0f0f0;
+      transition: box-shadow 0.3s;
+    }
+    input:focus { box-shadow: 0 0 10px #FF69B4; outline: none; }
+    button {
+      padding: 15px;
+      background: linear-gradient(135deg, #00BFFF, #1E90FF);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    button:hover { transform: scale(1.05); }
+    .emoji { font-size: 1.5em; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-        <h1>Hey There! 🚀 <span class="emoji">👋</span></h1>
-        <p>Since you're under 18, we need your parent's vibe check. Enter their deets below for quick consent!</p>
-        <form id="consentForm">
-            <input type="text" id="parentName" placeholder="Parent's Name ✨" required>
-            <input type="email" id="parentEmail" placeholder="Parent's Gmail 📧" required>
-            <button type="submit">Send the Magic! 🌟</button>
-        </form>
-    </div>
+  <div class="container">
+    <h1>Hey There! 🚀 <span class="emoji">👋</span></h1>
+    <p>Since you're under 18, we need your parent's vibe check. Enter their deets below for quick consent!</p>
+    <form id="consentForm">
+      <input type="text" id="parentName" placeholder="Parent's Name ✨" required>
+      <input type="email" id="parentEmail" placeholder="Parent's Gmail 📧" required>
+      <button type="submit">Send the Magic! 🌟</button>
+    </form>
+  </div>
 
-    <script>
-        // Replace with your Supabase URL and Anon Key (from Supabase dashboard > Settings > API)
-        const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
-
-        const form = document.getElementById('consentForm');
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const parentName = document.getElementById('parentName').value;
-            const parentEmail = document.getElementById('parentEmail').value;
-
-            // Call Supabase Edge Function to handle insertion and email
-            <script>
+  <script>
     const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    const SUPABASE_ANON_KEY = 'YOUR_REAL_ANON_KEY'; // replace
 
     const form = document.getElementById('consentForm');
     form.addEventListener('submit', async (e) => {
-        e.preventDefault();
+      e.preventDefault();
 
-        const parentName = document.getElementById('parentName').value;
-        const parentEmail = document.getElementById('parentEmail').value;
+      const parentName = document.getElementById('parentName').value;
+      const parentEmail = document.getElementById('parentEmail').value;
 
-        try {
-            // 1️⃣ Call send-consent-email to send the actual email
-            const response = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ parentName, parentEmail })
-            });
+      try {
+        console.log("➡️ Sending request to send-consent-email…");
 
-            if (!response.ok) {
-                throw new Error(await response.text());
-            }
+        const response = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ parentName, parentEmail })
+        });
 
-            alert('Consent request sent to your parent! 🎉 Check their email.');
+        console.log("send-consent-email response:", response.status);
 
-            // 2️⃣ (Optional) Call handle-consent directly for testing/demo
-            // In reality, the parent will click Yes/No from their email,
-            // which automatically calls this function via the link.
-            console.log("Testing handle-consent call…");
-
-            const testHandleConsent = await fetch(
-                `${SUPABASE_URL}/functions/v1/handle-consent?email=${encodeURIComponent(parentEmail)}&consent=test`,
-                {
-                    method: 'GET',
-                    headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
-                }
-            );
-
-            if (testHandleConsent.ok) {
-                console.log("handle-consent is reachable ✅");
-            } else {
-                console.warn("handle-consent test failed ❌");
-            }
-
-        } catch (err) {
-            alert('Oops! Something went wrong. 😅');
-            console.error(err);
+        if (!response.ok) {
+          throw new Error(await response.text());
         }
+
+        alert('Consent request sent! 🎉 Ask your parent to check their email.');
+
+        // 🔎 Optional test: ping handle-consent to see if it's reachable
+        console.log("➡️ Testing handle-consent endpoint…");
+
+        const testHandle = await fetch(
+          `${SUPABASE_URL}/functions/v1/handle-consent?email=${encodeURIComponent(parentEmail)}&consent=test`,
+          {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+          }
+        );
+
+        console.log("handle-consent test response:", testHandle.status);
+
+      } catch (err) {
+        console.error("❌ Error during submission:", err);
+        alert("Oops! Something went wrong. 😅 Check console for details.");
+      }
     });
-</script>
+  </script>
 </body>
 </html>
-
