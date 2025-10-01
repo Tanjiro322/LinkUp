@@ -114,6 +114,19 @@
             const parentEmail = document.getElementById('parentEmail').value;
 
             // Call Supabase Edge Function to handle insertion and email
+            <script>
+    const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+
+    const form = document.getElementById('consentForm');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const parentName = document.getElementById('parentName').value;
+        const parentEmail = document.getElementById('parentEmail').value;
+
+        try {
+            // 1️⃣ Call send-consent-email to send the actual email
             const response = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
                 method: 'POST',
                 headers: {
@@ -123,14 +136,37 @@
                 body: JSON.stringify({ parentName, parentEmail })
             });
 
-            if (response.ok) {
-                alert('Consent request sent to your parent! 🎉 Check back soon.');
-                // Optionally redirect or show a waiting message
-            } else {
-                alert('Oops! Something went wrong. Try again. 😅');
+            if (!response.ok) {
+                throw new Error(await response.text());
             }
-        });
-    </script>
-</body>
 
+            alert('Consent request sent to your parent! 🎉 Check their email.');
+
+            // 2️⃣ (Optional) Call handle-consent directly for testing/demo
+            // In reality, the parent will click Yes/No from their email,
+            // which automatically calls this function via the link.
+            console.log("Testing handle-consent call…");
+
+            const testHandleConsent = await fetch(
+                `${SUPABASE_URL}/functions/v1/handle-consent?email=${encodeURIComponent(parentEmail)}&consent=test`,
+                {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${SUPABASE_ANON_KEY}` }
+                }
+            );
+
+            if (testHandleConsent.ok) {
+                console.log("handle-consent is reachable ✅");
+            } else {
+                console.warn("handle-consent test failed ❌");
+            }
+
+        } catch (err) {
+            alert('Oops! Something went wrong. 😅');
+            console.error(err);
+        }
+    });
+</script>
+</body>
 </html>
+
