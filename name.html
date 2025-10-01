@@ -1,272 +1,55 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>What's Your Name?</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#667eea">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="api-queue.js"></script>
-<style>
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-    
-    body {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        overflow: hidden;
-        perspective: 1000px;
-    }
-    
-    .container {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 50px 40px;
-        border-radius: 24px;
-        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        transform-style: preserve-3d;
-        transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-    
-    .container.rotate-out {
-        transform: rotateY(90deg);
-        opacity: 0;
-    }
-    
-    h2 {
-        font-size: 32px;
-        margin-bottom: 30px;
-        color: #fff;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        animation: float 3s ease-in-out infinite;
-    }
-    
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    input {
-        padding: 16px 20px;
-        font-size: 18px;
-        border-radius: 12px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        margin: 20px 0;
-        width: 100%;
-        max-width: 320px;
-        background: rgba(255, 255, 255, 0.9);
-        transition: all 0.3s ease;
-        outline: none;
-    }
-    
-    input:focus {
-        border-color: #667eea;
-        transform: scale(1.02);
-        box-shadow: 0 0 20px rgba(102, 126, 234, 0.4);
-    }
-    
-    input::placeholder {
-        color: #999;
-    }
-    
-    button {
-        padding: 16px 40px;
-        font-size: 20px;
-        border-radius: 14px;
-        border: none;
-        cursor: pointer;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #fff;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        margin-top: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    button::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-    
-    button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(0,0,0,0.3);
-    }
-    
-    button:active::before {
-        width: 300px;
-        height: 300px;
-    }
-    
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-    
-    .emoji {
-        font-size: 48px;
-        margin-bottom: 20px;
-        animation: bounce 2s ease-in-out infinite;
-    }
-    
-    @keyframes bounce {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-15px); }
-    }
-    
-    .error {
-        color: #ff6b6b;
-        background: rgba(255, 107, 107, 0.2);
-        padding: 10px;
-        border-radius: 8px;
-        margin-top: 15px;
-        display: none;
-    }
-</style>
+    <title>Enter Name</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#ff6f61">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<div class="container" id="container">
-    <div class="emoji">👋</div>
-    <h2>What's your name?</h2>
-    <input type="text" id="name" placeholder="Enter your name" autocomplete="off">
-    <div class="error" id="error"></div>
-    <button id="next" type="button">Next →</button>
-</div>
+    <div class="container">
+        <h2>What's your Name?</h2>
+        <input type="text" id="name" placeholder="Enter your name">
+        <button id="next">Next</button>
+    </div>
 
-<script>
-// ========================================
-// SUPABASE CONFIGURATION
-// Replace these with your actual Supabase credentials
-// ========================================
-const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+    <script>
+        // 🔥 USE YOUR REAL CREDENTIALS HERE!
+        const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const { createClient } = supabase;
-const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        document.getElementById('next').addEventListener('click', async () => {
+            const name = document.getElementById('name').value.trim();
+            if (!name) { 
+                alert('Please enter your name'); 
+                return; 
+            }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ============================================
-    // CHECK IF ALREADY LOGGED IN
-    // If user already has session, go directly to main page
-    // ============================================
-    const existingUserId = sessionStorage.getItem('user_id');
-    const existingUserName = sessionStorage.getItem('user_name');
-    
-    if (existingUserId && existingUserName) {
-        console.log('User already logged in. Redirecting to main page...');
-        window.location.href = 'main.html';
-        return;
-    }
-    
-    const nameInput = document.getElementById('name');
-    const nextBtn = document.getElementById('next');
-    const container = document.getElementById('container');
-    const errorDiv = document.getElementById('error');
-    
-    // Focus on input when page loads
-    nameInput.focus();
-    
-    // Allow Enter key to submit
-    nameInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            nextBtn.click();
-        }
-    });
-    
-    // Hide error when user starts typing
-    nameInput.addEventListener('input', () => {
-        errorDiv.style.display = 'none';
-    });
-    
-    nextBtn.addEventListener('click', async () => {
-        const nameValue = nameInput.value.trim();
-        
-        // Validation
-        if (!nameValue) {
-            showError('Please enter your name 😊');
-            return;
-        }
-        
-        if (nameValue.length < 2) {
-            showError('Name should be at least 2 characters');
-            return;
-        }
-        
-        // Capitalize first letter
-        const name = nameValue.charAt(0).toUpperCase() + nameValue.slice(1);
-        
-        // Disable button to prevent double clicks
-        nextBtn.disabled = true;
-        nextBtn.textContent = 'Saving...';
-        
-        try {
-            console.log('Attempting to save to Supabase...');
-            
-            // Use API Queue Manager for thread-safe registration
-            const data = await apiQueue.enqueue(async () => {
+            console.log('Attempting to save name:', name); // 🔍 Debug
+
+            try {
                 const { data, error } = await supabaseClient
                     .from('profiles')
-                    .insert([{ name: name }])
-                    .select();
-                
-                if (error) {
-                    console.error('Supabase error:', error);
-                    throw error;
-                }
-                
-                console.log('Data saved successfully:', data);
-                return data;
-            });
-            
-            // Store user ID and name
-            if (data && data.length > 0 && data[0].id) {
+                    .insert([{ name }])
+                    .select(); // ✅ THIS IS CRITICAL - Returns the inserted row!
+
+                if (error) throw error;
+
+                console.log('Saved data:', data); // 🔍 Debug
+
+                // ✅ Use sessionStorage (to match details.html)
                 sessionStorage.setItem('user_id', data[0].id);
                 sessionStorage.setItem('user_name', name);
-                console.log('User ID stored:', data[0].id);
-            }
-            
-            // Rotate and navigate
-            container.classList.add('rotate-out');
-            
-            setTimeout(() => {
+
                 window.location.href = 'details.html';
-            }, 600);
-            
-        } catch (error) {
-            console.error('Error saving to Supabase:', error);
-            showError('Oops! Something went wrong. Please try again.');
-            nextBtn.disabled = false;
-            nextBtn.textContent = 'Next →';
-        }
-    });
-    
-    function showError(message) {
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
-        nameInput.focus();
-    }
-});
-</script>
+                
+            } catch (error) {
+                console.error('Full error:', error);
+                alert('Error saving name: ' + error.message);
+            }
+        });
+    </script>
 </body>
 </html>
-
