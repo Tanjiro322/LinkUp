@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -210,10 +210,10 @@
         <input type="text" id="mood" placeholder="What's your vibe today?" autocomplete="off">
         
         <div class="mood-suggestions">
-            <span class="mood-tag" data-mood="excited">😄 Excited</span>
-            <span class="mood-tag" data-mood="chill">😎 Chill</span>
-            <span class="mood-tag" data-mood="motivated">💪 Motivated</span>
-            <span class="mood-tag" data-mood="creative">🎨 Creative</span>
+            <span class="mood-tag" data-mood="Excited">😄 Excited</span>
+            <span class="mood-tag" data-mood="Chill">😎 Chill</span>
+            <span class="mood-tag" data-mood="Motivated">💪 Motivated</span>
+            <span class="mood-tag" data-mood="Creative">🎨 Creative</span>
         </div>
         
         <div class="error" id="error"></div>
@@ -257,11 +257,13 @@
             const clubhouseBtn = document.getElementById('clubhouse');
             const errorDiv = document.getElementById('error');
             
-            // Mood tag functionality
+            // Mood tag functionality - FIXED
             document.querySelectorAll('.mood-tag').forEach(tag => {
-                tag.addEventListener('click', () => {
-                    moodInput.value = tag.dataset.mood;
-                    moodInput.focus();
+                tag.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const moodValue = tag.getAttribute('data-mood');
+                    moodInput.value = moodValue;
+                    errorDiv.style.display = 'none';
                 });
             });
             
@@ -358,5 +360,4 @@
         });
     </script>
 </body>
-
 </html>
