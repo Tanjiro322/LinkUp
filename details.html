@@ -226,6 +226,7 @@
         // SUPABASE CONFIGURATION
         // Replace these with your actual Supabase credentials
         // ========================================
+
     const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -245,12 +246,12 @@
         const clubhouseBtn = document.getElementById('clubhouse');
         const errorDiv = document.getElementById('error');
 
-        // ✅ Mood tag fix
+        // Mood tag fix
         document.querySelectorAll('.mood-tag').forEach(tag => {
             tag.addEventListener('click', (e) => {
                 e.preventDefault();
                 const moodValue = tag.getAttribute('data-mood');
-                moodInput.value = moodValue; // now it goes in the box
+                moodInput.value = moodValue;
                 errorDiv.style.display = 'none';
             });
         });
@@ -263,15 +264,20 @@
 
         clubhouseBtn.addEventListener('click', async () => {
             const userId = sessionStorage.getItem('user_id');
+            console.log('🔍 User ID:', userId); // Debug
+            
             const userClass = classInput.value.trim();
             const age = parseInt(ageInput.value);
             const gender = genderSelect.value;
             const mood = moodInput.value.trim();
 
+            console.log('🔍 Data to save:', { userId, userClass, age, gender, mood }); // Debug
+
             if (!userClass) return showError('Please tell us your class 📚');
             if (!age || age < 1 || age > 120) return showError('Please enter a valid age 🎂');
             if (!gender) return showError('Please select your gender 🌈');
             if (!mood) return showError('Tell us your vibe! 💭');
+            
             if (!userId) {
                 showError('Session expired. Please start over.');
                 setTimeout(() => window.location.href = 'name.html', 2000);
@@ -288,17 +294,24 @@
                     .eq('id', userId)
                     .select();
 
+                console.log('🔍 Update response:', { data, error }); // Debug
+
                 if (error) throw error;
 
-                // ✅ Redirect logic
+                console.log('✅ Save successful! Age:', age); // Debug
+
+                // Redirect logic
                 if (age < 18) {
-                    window.location.href = 'parental.html';  // go to parental consent page
+                    console.log('🔀 Redirecting to parental.html');
+                    window.location.href = 'parental.html';
                 } else {
-                    window.location.href = 'mainpage.html';  // normal flow
+                    console.log('🔀 Redirecting to mainpage.html');
+                    window.location.href = 'mainpage.html';
                 }
 
             } catch (error) {
-                console.error('Error saving details:', error);
+                console.error('❌ Full error:', error);
+                console.error('❌ Error message:', error.message);
                 showError('Oops! Something went wrong. Please try again. 😕');
                 clubhouseBtn.disabled = false;
                 clubhouseBtn.textContent = 'INTO THE CLUBHOUSE 🎉';
@@ -311,9 +324,9 @@
         }
     });
 </script>
-
 </body>
 </html>
+
 
 
 
