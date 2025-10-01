@@ -1,0 +1,118 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parental Consent</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+    }
+    .container {
+      background: rgba(255,255,255,0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+      text-align: center;
+      width: 90%;
+      max-width: 420px;
+    }
+    h2 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    p {
+      color: #555;
+      font-size: 16px;
+      margin-bottom: 25px;
+    }
+    input {
+      padding: 14px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      width: 100%;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border 0.3s;
+    }
+    input:focus {
+      border-color: #667eea;
+    }
+    button {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 30px;
+      width: 100%;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.05);
+    }
+    .success {
+      color: green;
+      margin-top: 20px;
+      display: none;
+    }
+    .error {
+      color: red;
+      margin-top: 20px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Parental Permission Required 👨‍👩‍👧‍👦</h2>
+    <p>Please enter your parent’s Gmail ID.  
+    We’ll send them an email to approve your access.</p>
+    <form id="consentForm">
+      <input type="email" id="parentEmail" placeholder="Parent's Gmail" required>
+      <button type="submit">Send Request ✉️</button>
+    </form>
+    <div class="success" id="successMsg">✅ Request sent! Ask your parent to check their email.</div>
+    <div class="error" id="errorMsg">⚠️ Something went wrong. Try again.</div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const SUPABASE_URL = "https://YOUR_PROJECT.supabase.co";
+    const SUPABASE_ANON_KEY = "YOUR_ANON_KEY";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById("consentForm");
+    const successMsg = document.getElementById("successMsg");
+    const errorMsg = document.getElementById("errorMsg");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const parentEmail = document.getElementById("parentEmail").value.trim();
+
+      try {
+        const { data, error } = await supabaseClient.functions.invoke("send-consent", {
+          body: { parent_email: parentEmail }
+        });
+
+        if (error) throw error;
+        successMsg.style.display = "block";
+        errorMsg.style.display = "none";
+      } catch (err) {
+        console.error(err);
+        errorMsg.style.display = "block";
+        successMsg.style.display = "none";
+      }
+    });
+  </script>
+</body>
+</html>
