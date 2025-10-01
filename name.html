@@ -26,8 +26,12 @@
                 alert('Please enter your name'); 
                 return; 
             }
+        
+          // Disable button + show "Saving..."
+const nextBtn = document.getElementById('next');
+nextBtn.disabled = true;
+nextBtn.textContent = 'Saving...';
 
-            console.log('Attempting to save name:', name); // 🔍 Debug
 
             try {
                 const { data, error } = await supabaseClient
@@ -53,3 +57,4 @@
     </script>
 </body>
 </html>
+
