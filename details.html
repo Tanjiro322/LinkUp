@@ -219,146 +219,101 @@
         <div class="error" id="error"></div>
         <button id="clubhouse">INTO THE CLUBHOUSE 🎉</button>
     </div>
+    <a href="mainpage.html"> </a>
 
     <script>
         // ========================================
         // SUPABASE CONFIGURATION
         // Replace these with your actual Supabase credentials
         // ========================================
-        const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
-        
-        // ========================================
-        // AUDIO CONFIGURATION
-        // Replace 'your-audio-file.mp3' with your actual audio file name
-        // Place the audio file in the same directory as this HTML file
-        // ========================================
-        const CLUBHOUSE_AUDIO = 'your-audio-file.mp3';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Initialize audio
-        const audio = new Audio(CLUBHOUSE_AUDIO);
-        
-        document.addEventListener('DOMContentLoaded', () => {
-            // Get user name and display greeting
-            const userName = sessionStorage.getItem('user_name');
-            const greeting = document.getElementById('greeting');
-            
-            if (userName) {
-                greeting.textContent = `Hey ${userName}! 👋`;
+        <script>
+    const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const CLUBHOUSE_AUDIO = 'your-audio-file.mp3';
+    const audio = new Audio(CLUBHOUSE_AUDIO);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const userName = sessionStorage.getItem('user_name');
+        const greeting = document.getElementById('greeting');
+        if (userName) greeting.textContent = `Hey ${userName}! 👋`;
+
+        const classInput = document.getElementById('class');
+        const ageInput = document.getElementById('age');
+        const genderSelect = document.getElementById('gender');
+        const moodInput = document.getElementById('mood');
+        const clubhouseBtn = document.getElementById('clubhouse');
+        const errorDiv = document.getElementById('error');
+
+        // ✅ Mood tag fix
+        document.querySelectorAll('.mood-tag').forEach(tag => {
+            tag.addEventListener('click', (e) => {
+                e.preventDefault();
+                const moodValue = tag.getAttribute('data-mood');
+                moodInput.value = moodValue; // now it goes in the box
+                errorDiv.style.display = 'none';
+            });
+        });
+
+        [classInput, ageInput, genderSelect, moodInput].forEach(element => {
+            element.addEventListener('input', () => {
+                errorDiv.style.display = 'none';
+            });
+        });
+
+        clubhouseBtn.addEventListener('click', async () => {
+            const userId = sessionStorage.getItem('user_id');
+            const userClass = classInput.value.trim();
+            const age = parseInt(ageInput.value);
+            const gender = genderSelect.value;
+            const mood = moodInput.value.trim();
+
+            if (!userClass) return showError('Please tell us your class 📚');
+            if (!age || age < 1 || age > 120) return showError('Please enter a valid age 🎂');
+            if (!gender) return showError('Please select your gender 🌈');
+            if (!mood) return showError('Tell us your vibe! 💭');
+            if (!userId) {
+                showError('Session expired. Please start over.');
+                setTimeout(() => window.location.href = 'name.html', 2000);
+                return;
             }
-            
-            // Get elements
-            const classInput = document.getElementById('class');
-            const ageInput = document.getElementById('age');
-            const genderSelect = document.getElementById('gender');
-            const moodInput = document.getElementById('mood');
-            const clubhouseBtn = document.getElementById('clubhouse');
-            const errorDiv = document.getElementById('error');
-            
-            // Mood tag functionality - FIXED
-            document.querySelectorAll('.mood-tag').forEach(tag => {
-                tag.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const moodValue = tag.getAttribute('data-mood');
-                    moodInput.value = moodValue;
-                    errorDiv.style.display = 'none';
-                });
-            });
-            
-            // Hide error when user types
-            [classInput, ageInput, genderSelect, moodInput].forEach(element => {
-                element.addEventListener('input', () => {
-                    errorDiv.style.display = 'none';
-                });
-            });
-            
-            // Main submission
-            clubhouseBtn.addEventListener('click', async () => {
-                const userId = sessionStorage.getItem('user_id');
-                const userClass = classInput.value.trim();
-                const age = parseInt(ageInput.value);
-                const gender = genderSelect.value;
-                const mood = moodInput.value.trim();
-                
-                // Validation
-                if (!userClass) {
-                    showError('Please tell us your class 📚');
-                    classInput.focus();
-                    return;
+
+            clubhouseBtn.disabled = true;
+            clubhouseBtn.textContent = 'Getting everything ready... ✨';
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .update({ class: userClass, age: age, gender: gender, mood: mood })
+                    .eq('id', userId)
+                    .select();
+
+                if (error) throw error;
+
+                // ✅ Redirect logic
+                if (age < 18) {
+                    window.location.href = 'parental.html';  // go to parental consent page
+                } else {
+                    window.location.href = 'mainpage.html';  // normal flow
                 }
-                
-                if (!age || age < 1 || age > 120) {
-                    showError('Please enter a valid age 🎂');
-                    ageInput.focus();
-                    return;
-                }
-                
-                if (!gender) {
-                    showError('Please select your gender 🌈');
-                    genderSelect.focus();
-                    return;
-                }
-                
-                if (!mood) {
-                    showError('Tell us your vibe! 💭');
-                    moodInput.focus();
-                    return;
-                }
-                
-                if (!userId) {
-                    showError('Session expired. Please start over.');
-                    setTimeout(() => {
-                        window.location.href = 'name.html';
-                    }, 2000);
-                    return;
-                }
-                
-                // Disable button
-                clubhouseBtn.disabled = true;
-                clubhouseBtn.textContent = 'Getting everything ready... ✨';
-                
-                try {
-                    // Update user data in Supabase
-                    const { data, error } = await supabaseClient
-                        .from('profiles')
-                        .update({ 
-                            class: userClass, 
-                            age: age, 
-                            gender: gender, 
-                            mood: mood 
-                        })
-                        .eq('id', userId)
-                        .select();
-                    
-                    if (error) throw error;
-                    
-                    // Play audio
-                    audio.play().catch(err => {
-                        console.log('Audio playback failed:', err);
-                        // Continue to next page even if audio fails
-                    });
-                    
-                    // Navigate after short delay
-                    setTimeout(() => {
-                        window.location.href = 'mainpage.html';
-                    }, 1000);
-                    
-                } catch (error) {
-                    console.error('Error saving details:', error);
-                    showError('Oops! Something went wrong. Please try again. 😕');
-                    clubhouseBtn.disabled = false;
-                    clubhouseBtn.textContent = 'INTO THE CLUBHOUSE 🎉';
-                }
-            });
-            
-            function showError(message) {
-                errorDiv.textContent = message;
-                errorDiv.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error saving details:', error);
+                showError('Oops! Something went wrong. Please try again. 😕');
+                clubhouseBtn.disabled = false;
+                clubhouseBtn.textContent = 'INTO THE CLUBHOUSE 🎉';
             }
         });
-    </script>
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+    });
+</script>
+
 </body>
 </html>
+
 
