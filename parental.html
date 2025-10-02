@@ -111,118 +111,103 @@
   </div>
 
   <script>
-    // CONFIG - replace with your keys
-    const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A'; // <-- replace before deploying
+  // CONFIG - your Supabase project info
+  const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A'; // Only needed for Supabase auth if used
 
-    // DOM
-    const form = document.getElementById('consentForm');
-    const sendBtn = document.getElementById('sendBtn');
-    const btnText = document.getElementById('btnText');
-    const statusDiv = document.getElementById('status');
-    const parentNameField = document.getElementById('parentName');
-    const parentEmailField = document.getElementById('parentEmail');
+  const form = document.getElementById('consentForm');
+  const sendBtn = document.getElementById('sendBtn');
+  const btnText = document.getElementById('btnText');
+  const statusDiv = document.getElementById('status');
+  const parentNameField = document.getElementById('parentName');
+  const parentEmailField = document.getElementById('parentEmail');
 
-    function setLoading(loading) {
-      // clear previous status on new attempts
-      if (loading) {
-        // replace text and show spinner
-        btnText.innerHTML = '';
-        const spinner = document.createElement('span');
-        spinner.className = 'spinner';
-        spinner.setAttribute('aria-hidden', 'true');
-        const textNode = document.createElement('span');
-        textNode.textContent = 'Sending...';
-        btnText.appendChild(spinner);
-        btnText.appendChild(textNode);
-
-        sendBtn.disabled = true;
-        parentNameField.disabled = true;
-        parentEmailField.disabled = true;
-        statusDiv.textContent = ''; // clear
-        statusDiv.classList.remove('error');
-      } else {
-        // restore
-        btnText.textContent = 'Send the Magic! 🌟';
-        sendBtn.disabled = false;
-        parentNameField.disabled = false;
-        parentEmailField.disabled = false;
-      }
+  function setLoading(loading) {
+    if (loading) {
+      btnText.innerHTML = '';
+      const spinner = document.createElement('span');
+      spinner.className = 'spinner';
+      spinner.setAttribute('aria-hidden', 'true');
+      const textNode = document.createElement('span');
+      textNode.textContent = 'Sending...';
+      btnText.appendChild(spinner);
+      btnText.appendChild(textNode);
+      sendBtn.disabled = true;
+      parentNameField.disabled = true;
+      parentEmailField.disabled = true;
+      statusDiv.textContent = '';
+      statusDiv.classList.remove('error');
+    } else {
+      btnText.textContent = 'Send the Magic! 🌟';
+      sendBtn.disabled = false;
+      parentNameField.disabled = false;
+      parentEmailField.disabled = false;
     }
+  }
 
-    async function postSendConsent(parentName, parentEmail) {
-      const url = `${SUPABASE_URL}/functions/v1/send-consent-email`;
-
-      // Important: Your Edge Function must respond with CORS headers:
-      // Access-Control-Allow-Origin: *
-      // Access-Control-Allow-Methods: POST, OPTIONS
-      // Access-Control-Allow-Headers: authorization, content-type, apikey
-      // If you haven't added those to the function, the browser will block the request.
-
-      const payload = { parentName, parentEmail };
-
-      const resp = await fetch(url, {
+  async function postSendConsent(parentName, parentEmail) {
+    try {
+      const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload),
-        // mode: 'cors' is default for cross-origin fetches from the browser
+        body: JSON.stringify({ parentName, parentEmail })
       });
-
       return resp;
+    } catch (err) {
+      console.error('Network error:', err);
+      throw new Error('Network error or function not reachable');
+    }
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const parentName = parentNameField.value.trim();
+    const parentEmail = parentEmailField.value.trim();
+
+    if (!parentName || !parentEmail) {
+      statusDiv.textContent = 'Please fill both fields.';
+      statusDiv.classList.add('error');
+      return;
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const parentName = parentNameField.value.trim();
-      const parentEmail = parentEmailField.value.trim();
+    try {
+      setLoading(true);
 
-      if (!parentName || !parentEmail) {
-        statusDiv.textContent = 'Please fill both fields.';
-        statusDiv.classList.add('error');
-        return;
-      }
+      const resp = await postSendConsent(parentName, parentEmail);
+      console.log('send-consent-email status:', resp.status);
 
-      try {
-        setLoading(true);
-
-        // send request
-        const resp = await postSendConsent(parentName, parentEmail);
-        // console.log for debugging
-        console.log('send-consent-email status:', resp.status);
-
-        // handle non-ok response
-        if (!resp.ok) {
-          // try to parse JSON message, otherwise get text
-          let text;
-          try { text = await resp.json(); } catch (err) { text = await resp.text(); }
-          const message = (text && text.error) ? text.error : (text && text.message) ? text.message : JSON.stringify(text);
-          throw new Error(message || `Server returned ${resp.status}`);
+      if (!resp.ok) {
+        let msg;
+        try { 
+          const json = await resp.json(); 
+          msg = json.error || json.message; 
+        } catch { 
+          msg = await resp.text(); 
         }
-
-        // success
-        statusDiv.classList.remove('error');
-        statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
-        // keep a friendly small instruction
-        document.getElementById('smallNote').textContent = "If your parent doesn't receive the email within a few minutes, ask them to check spam.";
-
-        // optionally clear inputs after a short delay
-        setTimeout(() => {
-          parentNameField.value = '';
-          parentEmailField.value = '';
-          setLoading(false);
-        }, 900);
-
-      } catch (err) {
-        console.error('Error sending consent request:', err);
-        statusDiv.classList.add('error');
-        statusDiv.textContent = `Oops — couldn't send request. ${err.message || ''}`;
-        setLoading(false);
+        throw new Error(msg || `Server returned ${resp.status}`);
       }
-    });
-  </script>
+
+      statusDiv.classList.remove('error');
+      statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
+      document.getElementById('smallNote').textContent = "If your parent doesn't receive the email within a few minutes, ask them to check spam.";
+
+      setTimeout(() => {
+        parentNameField.value = '';
+        parentEmailField.value = '';
+        setLoading(false);
+      }, 900);
+
+    } catch (err) {
+      console.error('Error sending consent request:', err);
+      statusDiv.classList.add('error');
+      statusDiv.textContent = `Oops — couldn't send request. ${err.message}`;
+      setLoading(false);
+    }
+  });
+</script>
 </body>
 </html>
+
 
