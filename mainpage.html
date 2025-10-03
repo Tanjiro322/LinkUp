@@ -474,14 +474,7 @@
         </div>
     </div>
 
-    <!-- View Status Modal -->
-    <div class="modal" id="statusModal">
-        <div class="modal-content">
-            <span class="close-modal" id="closeModal">&times;</span>
-            <h2 style="color: #fff; margin-bottom: 20px;">📱 Today's Status Feed</h2>
-            <div class="status-feed" id="statusFeed"></div>
-        </div>
-    </div>
+
 
     <!-- PWA Install Popup -->
     <div class="install-popup" id="installPopup">
@@ -537,11 +530,7 @@
         document.getElementById('installBtnNo').addEventListener('click', () => {
             document.getElementById('installPopup').style.display = 'none';
         });
-        // Profile button - Add/Update profile photo
-// View status button - navigate to status feed page
-document.getElementById('viewStatusBtn').addEventListener('click', () => {
-    window.location.href = 'profile.html';
-});
+
 
 
 
@@ -711,10 +700,7 @@ document.getElementById('installBtnYes').addEventListener('click', async () => {
 
             // View status button
            // View status button - navigate to status feed page
-// Navigate to Profile Page
-document.getElementById('profileBtn').addEventListener('click', () => {
-    window.location.href = 'profile.html';
-});
+
 
 // Navigate to Chat Page
 document.getElementById('chatBtn').addEventListener('click', () => {
@@ -807,6 +793,7 @@ document.getElementById('aboutUsBtn').addEventListener('click', () => {
 
 </body>
 </html>
+
 
 
 
