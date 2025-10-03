@@ -451,6 +451,11 @@
                 <span>💬</span>
                 <p>Chat</p>
             </div>
+            <div class="icon-btn" id="gamesBtn">
+    <span>🎮</span>
+    <p>Gaming Library</p>
+</div>
+
         </div>
 
         <!-- Welcome Message -->
@@ -788,11 +793,15 @@ document.getElementById('chatIcon').addEventListener('click', () => {
 <script>
 document.getElementById('aboutUsBtn').addEventListener('click', () => {
     window.location.href = 'about.html'; // create about.html separately
+    // Navigate to Gaming Library Page
+    document.getElementById('gamesBtn').addEventListener('click', () => {
+    window.location.href = 'games.html';
+});
 });
 </script>
-
 </body>
 </html>
+
 
 
 
