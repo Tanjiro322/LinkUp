@@ -30,15 +30,22 @@ async function postSendConsent(parentName, parentEmail) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}` // Supabase anon key
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
     },
     body: JSON.stringify({ parentName, parentEmail })
   });
-  return resp;
-}
 
-}
+  // Read body **once** only
+  let data;
+  try {
+    data = await resp.json();
+  } catch {
+    const text = await resp.text();
+    data = { error: text };
+  }
 
+  return { ok: resp.ok, data };
+}
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -54,16 +61,15 @@ form.addEventListener('submit', async (e) => {
   try {
     setLoading(true);
 
-    const resp = await postSendConsent(parentName, parentEmail);
+    const { ok, data } = await postSendConsent(parentName, parentEmail);
 
-    if (!resp.ok) {
-      let msg;
-      try { msg = (await resp.json()).error || (await resp.json()).message; } catch { msg = await resp.text(); }
-      throw new Error(msg || `Server returned ${resp.status}`);
+    if (!ok) {
+      throw new Error(data.error || data.message || 'Unknown error');
     }
 
     statusDiv.classList.remove('error');
     statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
+
     setTimeout(() => {
       parentNameField.value = '';
       parentEmailField.value = '';
@@ -77,5 +83,7 @@ form.addEventListener('submit', async (e) => {
   }
 });
 </script>
+
+
 
 
