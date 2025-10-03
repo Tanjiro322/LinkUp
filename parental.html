@@ -148,12 +148,14 @@
   async function postSendConsent(parentName, parentEmail) {
     try {
       const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ parentName, parentEmail })
-      });
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+  },
+  body: JSON.stringify({ parentName, parentEmail })
+});
+
       return resp;
     } catch (err) {
       console.error('Network error:', err);
@@ -209,5 +211,6 @@
 </script>
 </body>
 </html>
+
 
 
