@@ -157,73 +157,81 @@
     <div class="footer">🔒 Your information is secure and private</div>
   </div>
 
-  <script>
-    const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A';
-    const form = document.getElementById('consentForm');
-    const sendBtn = document.getElementById('sendBtn');
-    const btnText = document.getElementById('btnText');
-    const statusDiv = document.getElementById('status');
-    const parentNameField = document.getElementById('parentName');
-    const parentEmailField = document.getElementById('parentEmail');
+  const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A'; // replace with actual anon key
+const form = document.getElementById('consentForm');
+const sendBtn = document.getElementById('sendBtn');
+const btnText = document.getElementById('btnText');
+const statusDiv = document.getElementById('status');
+const parentNameField = document.getElementById('parentName');
+const parentEmailField = document.getElementById('parentEmail');
 
-    function setLoading(loading) {
-      if(loading){
-        btnText.innerHTML = '<span class="spinner"></span> Sending...';
-        sendBtn.disabled = true;
-        parentNameField.disabled = true;
-        parentEmailField.disabled = true;
-        statusDiv.textContent = '';
-        statusDiv.classList.remove('error');
-      } else {
-        btnText.textContent = 'Send the Magic! 🌟';
-        sendBtn.disabled = false;
-        parentNameField.disabled = false;
-        parentEmailField.disabled = false;
-      }
-    }
+function setLoading(loading) {
+  if(loading){
+    btnText.innerHTML = '<span class="spinner"></span> Sending...';
+    sendBtn.disabled = true;
+    parentNameField.disabled = true;
+    parentEmailField.disabled = true;
+    statusDiv.textContent = '';
+    statusDiv.classList.remove('error');
+  } else {
+    btnText.textContent = 'Send the Magic! 🌟';
+    sendBtn.disabled = false;
+    parentNameField.disabled = false;
+    parentEmailField.disabled = false;
+  }
+}
 
-    async function postSendConsent(parentName, parentEmail){
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`,{
-        method:'POST',
-        headers:{
-          'Content-Type':'application/json',
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-        },
-        body: JSON.stringify({ parentName, parentEmail })
-      });
-      let data;
-      try { data = await resp.json(); } catch { data = {error: await resp.text()}; }
-      return { ok: resp.ok, data };
-    }
-
-    form.addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const parentName = parentNameField.value.trim();
-      const parentEmail = parentEmailField.value.trim();
-      if(!parentName || !parentEmail){
-        statusDiv.textContent = 'Please fill both fields.';
-        statusDiv.classList.add('error');
-        return;
-      }
-      try{
-        setLoading(true);
-        const { ok, data } = await postSendConsent(parentName,parentEmail);
-        if(!ok) throw new Error(data.error || data.message || 'Unknown error');
-        statusDiv.classList.remove('error');
-        statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
-        setTimeout(()=>{
-          parentNameField.value='';
-          parentEmailField.value='';
-          setLoading(false);
-        },900);
-      } catch(err){
-        statusDiv.classList.add('error');
-        statusDiv.textContent = `Oops — couldn't send request. ${err.message}`;
-        setLoading(false);
-      }
+async function postSendConsent(parentName, parentEmail){
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`,{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      },
+      body: JSON.stringify({ parentName, parentEmail })
     });
+    let data;
+    try { data = await resp.json(); } catch { data = {error: await resp.text()}; }
+    return { ok: resp.ok, data };
+  } catch(err) {
+    console.error('Network error:', err);
+    return { ok:false, data:{error:'Network error or function not reachable'} };
+  }
+}
+
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const parentName = parentNameField.value.trim();
+  const parentEmail = parentEmailField.value.trim();
+  if(!parentName || !parentEmail){
+    statusDiv.textContent = 'Please fill both fields.';
+    statusDiv.classList.add('error');
+    return;
+  }
+  try{
+    setLoading(true);
+    const { ok, data } = await postSendConsent(parentName,parentEmail);
+    if(!ok) throw new Error(data.error || data.message || 'Unknown error');
+    statusDiv.classList.remove('error');
+    statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
+    console.log('Consent email sent:', data);
+    setTimeout(()=>{
+      parentNameField.value='';
+      parentEmailField.value='';
+      setLoading(false);
+    },900);
+  } catch(err){
+    statusDiv.classList.add('error');
+    statusDiv.textContent = `Oops — couldn't send request. ${err.message}`;
+    console.error('Error sending consent:', err);
+    setLoading(false);
+  }
+});
+
   </script>
 </body>
 </html>
+
 
