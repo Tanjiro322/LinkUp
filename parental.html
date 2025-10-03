@@ -30,11 +30,13 @@ async function postSendConsent(parentName, parentEmail) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}` // Supabase anon key
     },
     body: JSON.stringify({ parentName, parentEmail })
   });
   return resp;
+}
+
 }
 
 
@@ -75,4 +77,5 @@ form.addEventListener('submit', async (e) => {
   }
 });
 </script>
+
 
