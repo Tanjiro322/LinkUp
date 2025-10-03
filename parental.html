@@ -1,216 +1,76 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Parental Consent Vibes ✨</title>
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #FF69B4, #FFD700, #00FF7F);
-      color: #333;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      overflow: hidden;
-      animation: gradientShift 10s ease infinite;
-    }
-    @keyframes gradientShift {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.9);
-      padding: 40px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-      text-align: center;
-      max-width: 420px;
-      animation: popIn 0.5s ease;
-    }
-    @keyframes popIn {
-      from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
-    }
-    h1 { font-size: 2.2em; color: #FF1493; margin-bottom: 8px; }
-    p { font-size: 1.05em; margin-bottom: 18px; }
-    form { display:flex; flex-direction:column; gap:12px; align-items:stretch; }
-    input {
-      padding: 12px 14px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      background: #f0f0f0;
-      transition: box-shadow 0.3s;
-    }
-    input:focus { box-shadow: 0 0 10px #FF69B4; outline: none; }
-    .actions { display:flex; gap:12px; align-items:center; }
-    button {
-      flex: 1;
-      padding: 12px 16px;
-      background: linear-gradient(135deg, #00BFFF, #1E90FF);
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 1.05em;
-      cursor: pointer;
-      transition: transform 0.18s ease, opacity 0.18s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-    }
-    button:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-      transform: none;
-    }
+<script>
+const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
 
-    /* small spinner */
-    .spinner {
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      border: 2px solid rgba(255,255,255,0.35);
-      border-top-color: rgba(255,255,255,0.95);
-      animation: spin 0.9s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
+const form = document.getElementById('consentForm');
+const sendBtn = document.getElementById('sendBtn');
+const btnText = document.getElementById('btnText');
+const statusDiv = document.getElementById('status');
+const parentNameField = document.getElementById('parentName');
+const parentEmailField = document.getElementById('parentEmail');
 
-    .status {
-      margin-top: 12px;
-      font-size: 0.95em;
-      color: #064e3b; /* greenish for success */
-      min-height: 1.2em;
-    }
-    .status.error { color: #9b1c1c; } /* error red */
-    .small-note { font-size: 0.82em; color: #444; margin-top:6px; }
-  </style>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-</head>
-<body>
-  <div class="container">
-    <h1>Hey There! 🚀 <span class="emoji">👋</span></h1>
-    <p>Since you're under 18, we need your parent's vibe check. Enter their deets below for quick consent!</p>
-
-    <form id="consentForm" autocomplete="off">
-      <input type="text" id="parentName" placeholder="Parent's Name ✨" required />
-      <input type="email" id="parentEmail" placeholder="Parent's Gmail 📧" required />
-      <div class="actions">
-        <button id="sendBtn" type="submit">
-          <span id="btnText">Send the Magic! 🌟</span>
-        </button>
-      </div>
-
-      <div id="status" class="status" aria-live="polite"></div>
-      <div id="smallNote" class="small-note">We'll only use this email to request parental consent. <a href="policy.html" target="_blank">Privacy & Terms</a></div>
-    </form>
-  </div>
-
-  <script>
-  // CONFIG - your Supabase project info
-  const SUPABASE_URL = 'https://yqzlwsmpkqeocyhduizf.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inlxemx3c21wa3Flb2N5aGR1aXpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg5Njg4MzAsImV4cCI6MjA3NDU0NDgzMH0.54jT8GN4hdNjrlXK9TLxzslWbEk5Ocgzh3QC8jAPk0A'; // Only needed for Supabase auth if used
-
-  const form = document.getElementById('consentForm');
-  const sendBtn = document.getElementById('sendBtn');
-  const btnText = document.getElementById('btnText');
-  const statusDiv = document.getElementById('status');
-  const parentNameField = document.getElementById('parentName');
-  const parentEmailField = document.getElementById('parentEmail');
-
-  function setLoading(loading) {
-    if (loading) {
-      btnText.innerHTML = '';
-      const spinner = document.createElement('span');
-      spinner.className = 'spinner';
-      spinner.setAttribute('aria-hidden', 'true');
-      const textNode = document.createElement('span');
-      textNode.textContent = 'Sending...';
-      btnText.appendChild(spinner);
-      btnText.appendChild(textNode);
-      sendBtn.disabled = true;
-      parentNameField.disabled = true;
-      parentEmailField.disabled = true;
-      statusDiv.textContent = '';
-      statusDiv.classList.remove('error');
-    } else {
-      btnText.textContent = 'Send the Magic! 🌟';
-      sendBtn.disabled = false;
-      parentNameField.disabled = false;
-      parentEmailField.disabled = false;
-    }
+function setLoading(loading) {
+  if (loading) {
+    btnText.innerHTML = '<span class="spinner"></span> Sending...';
+    sendBtn.disabled = true;
+    parentNameField.disabled = true;
+    parentEmailField.disabled = true;
+    statusDiv.textContent = '';
+    statusDiv.classList.remove('error');
+  } else {
+    btnText.textContent = 'Send the Magic! 🌟';
+    sendBtn.disabled = false;
+    parentNameField.disabled = false;
+    parentEmailField.disabled = false;
   }
+}
 
-  async function postSendConsent(parentName, parentEmail) {
-    try {
-      const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-  },
-  body: JSON.stringify({ parentName, parentEmail })
-});
-
-      return resp;
-    } catch (err) {
-      console.error('Network error:', err);
-      throw new Error('Network error or function not reachable');
-    }
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const parentName = parentNameField.value.trim();
-    const parentEmail = parentEmailField.value.trim();
-
-    if (!parentName || !parentEmail) {
-      statusDiv.textContent = 'Please fill both fields.';
-      statusDiv.classList.add('error');
-      return;
-    }
-
-    try {
-      setLoading(true);
-
-      const resp = await postSendConsent(parentName, parentEmail);
-      console.log('send-consent-email status:', resp.status);
-
-      if (!resp.ok) {
-        let msg;
-        try { 
-          const json = await resp.json(); 
-          msg = json.error || json.message; 
-        } catch { 
-          msg = await resp.text(); 
-        }
-        throw new Error(msg || `Server returned ${resp.status}`);
-      }
-
-      statusDiv.classList.remove('error');
-      statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
-      document.getElementById('smallNote').textContent = "If your parent doesn't receive the email within a few minutes, ask them to check spam.";
-
-      setTimeout(() => {
-        parentNameField.value = '';
-        parentEmailField.value = '';
-        setLoading(false);
-      }, 900);
-
-    } catch (err) {
-      console.error('Error sending consent request:', err);
-      statusDiv.classList.add('error');
-      statusDiv.textContent = `Oops — couldn't send request. ${err.message}`;
-      setLoading(false);
-    }
+async function postSendConsent(parentName, parentEmail) {
+  const resp = await fetch(`${SUPABASE_URL}/functions/v1/send-consent-email`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+    },
+    body: JSON.stringify({ parentName, parentEmail })
   });
+  return resp;
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const parentName = parentNameField.value.trim();
+  const parentEmail = parentEmailField.value.trim();
+
+  if (!parentName || !parentEmail) {
+    statusDiv.textContent = 'Please fill both fields.';
+    statusDiv.classList.add('error');
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const resp = await postSendConsent(parentName, parentEmail);
+
+    if (!resp.ok) {
+      let msg;
+      try { msg = (await resp.json()).error || (await resp.json()).message; } catch { msg = await resp.text(); }
+      throw new Error(msg || `Server returned ${resp.status}`);
+    }
+
+    statusDiv.classList.remove('error');
+    statusDiv.textContent = "Sent — ask your parent to check their Gmail (including Spam). ✅";
+    setTimeout(() => {
+      parentNameField.value = '';
+      parentEmailField.value = '';
+      setLoading(false);
+    }, 900);
+
+  } catch (err) {
+    statusDiv.classList.add('error');
+    statusDiv.textContent = `Oops — couldn't send request. ${err.message}`;
+    setLoading(false);
+  }
+});
 </script>
-</body>
-</html>
-
-
-
